@@ -54,7 +54,6 @@ mutable struct Disc
     radius::Float32
     min_t::Float32
     nearest_coll
-
 end
 
 # Also make structs for the walls so that it's easy to make ifs and elseifs
