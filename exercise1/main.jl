@@ -2,10 +2,19 @@ include("structs.jl")
 include("functions.jl")
 
 using Random
+using DataStructures
+using LinearAlgebra
 
 mass_i = 0.01
 mass_j = 0.01
 ksi = 1
+
+disc1 = Disc((0.5, 0.5), (0.5,0), mass_i, 0.05, 0)
+disc2 = Disc((0.1, 0.1), (0.2, 0.3), mass_i, 0.05, 0)
+discs = [disc1, disc2]
+queue = initialize_collisions(discs)
+update(queue, discs)
+println(disc1.vel)
 
 
 

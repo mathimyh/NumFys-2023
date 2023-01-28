@@ -4,7 +4,6 @@ mutable struct Disc
     vel::Tuple{Float64, Float64}
     mass::Float64
     radius::Float64
-    min_t::Float64
     c_count::Int64
 end
 
@@ -12,4 +11,12 @@ end
 struct VertWall
 end
 struct HoriWall
+end
+
+# Make the structs for each collision. 
+mutable struct Collision
+    object1
+    object2
+    count1::Int64
+    count2::Int64
 end
