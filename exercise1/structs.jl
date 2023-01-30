@@ -19,4 +19,5 @@ mutable struct Collision
     object2
     count1::Int64
     count2::Int64
+    time_until::Float64
 end

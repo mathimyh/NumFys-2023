@@ -4,17 +4,74 @@ include("functions.jl")
 using Random
 using DataStructures
 using LinearAlgebra
+using Plots
+
+function circle(disc; n=30)
+    θ = 0:360÷n:360
+    Plots.Shape(disc.radius*sind.(θ) .+ disc.pos[1], disc.radius*cosd.(θ) .+ disc.pos[2])
+end
+
+function circle(x, y , radius; n=30)
+    θ = 0:360÷n:360
+    Plots.Shape(radius*sind.(θ) .+ x, radius*cosd.(θ) .+ y)
+end
 
 mass_i = 0.01
 mass_j = 0.01
 ksi = 1
+clock = 0 # A timer of sorts. This is so the pq can keep track of which collision is next
 
-disc1 = Disc((0.5, 0.5), (0.5,0), mass_i, 0.05, 0)
-disc2 = Disc((0.1, 0.1), (0.2, 0.3), mass_i, 0.05, 0)
+disc1 = Disc((0.1, 0.5), (0.1,0.3), mass_i, 0.05, 0)
+disc2 = Disc((0.9, 0.5), (-0.02,0), mass_i, 0.05, 0)
 discs = [disc1, disc2]
 queue = initialize_collisions(discs)
-update(queue, discs)
-println(disc1.vel)
+
+
+# for i in 1:4
+#     update(queue, discs, clock)
+#     println("\n", queue)
+# end
+
+# circles = circle.(discs)
+# plot(circles, xlim=(0,1), ylim=(0,1))
+
+
+function move_til_next(queue, discs, clock, anim)
+    startpoints = [disc.pos for disc in discs]
+    vels = [disc.vel for disc in discs]
+    moving_time = peek(queue)[1].time_until
+    update(queue, discs, clock)
+    x = []
+    y = []
+    radii = []
+    for i in 0:0.05:moving_time
+        circles = []
+        for j in 1:length(startpoints)
+            dx = (startpoints[j][1] - discs[j].pos[1]) / (moving_time)
+            dy = (startpoints[j][2] - discs[j].pos[2]) / (moving_time)
+            push!(x, startpoints[j][1] - dx*i)
+            push!(y, startpoints[j][2] - dy*i)
+            push!(radii, discs[j].radius)
+        end
+        circles = circle.(x, y, radii)
+        plot(circles, legend=false, xlim=(0,1), ylim=(0,1))
+        Plots.frame(anim)
+    end
+end
+
+anim = Plots.Animation()
+for k in 1:10
+    move_til_next(queue, discs, clock, anim)
+end
+
+gif(anim, "anim2.gif")
+
+# anim = @animate for _ in 1:steps
+#     move_til_next(queue, discs, clock)
+# end
+
+# gif(anim, "anim.gif")
+
 
 
 
