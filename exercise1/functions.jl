@@ -38,36 +38,24 @@ function delta_t(i,j,v_i,v_j, rad_i, rad_j)
     end
 end
 
-function big_factor(disc1, disc2)
-    return (1+ksi) * (disc2.mass/(disc1.mass+disc2.mass)) * (dot(delta_v(disc1.vel, disc2.vel), delta_x(disc1.pos, disc2.pos))/(disc1.radius+disc2.radius)^2)
+function big_factor_i(disc1, disc2)
+    return (1+ksi) * (disc2.mass/(disc1.mass+disc2.mass)) * (dot(delta_v(disc1.vel, disc2.vel), delta_x(disc1.pos, disc2.pos))/(disc1.radius^2+disc2.radius^2))
+end
+
+function big_factor_j(disc1, disc2)
+    return (1+ksi) * (disc1.mass/(disc1.mass+disc2.mass)) * (dot(delta_v(disc1.vel, disc2.vel), delta_x(disc1.pos, disc2.pos))/((disc1.radius+disc2.radius)^2))
 end
 
 function vel_two_discs_i(disc1, disc2)
-    return (disc1.vel[1] + big_factor(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[1], disc1.vel[2] + big_factor(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[2])
+    return (disc1.vel[1] + big_factor_i(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[1], disc1.vel[2] + big_factor(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[2])
 end
 
 function vel_two_discs_j(disc1, disc2)
-    return (disc1.vel[2] - big_factor(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[1], disc1.vel[2] + big_factor(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[2])
-end
-
-## Initialize function that sets up the system described in problem 1. Returns an array of all discs.
-function initialize1(n, random_mass = false)
-    radius = 1 / (100*n) # So it doesn't get too crowded
-    discs = Array{Disc}
-    for i in 1:n
-        if random_mass
-            mass = rand(Float32, (1,100))
-        else
-            mass = 1
-        end
-        pos = (rand(Float32, (radius/2, 1 - radius/2)), rand(Float32, (radius/2, 1 - radius/2))) 
-        
-        
-    end
+    return (disc1.vel[2] - big_factor_j(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[1], disc1.vel[2] + big_factor(disc1, disc2) * delta_x(disc1.pos, disc2.pos)[2])
 end
 
 # The function that finds the earliest collision for a disc. Updates the queue as well
-function update_collision(disc, discs, queue)
+function update_collision(disc, discs, queue, clock)
     time = 10^8
     for other in discs if other != disc
         temp = delta_t(disc.pos, other.pos, disc.vel, other.vel, disc.radius, other.radius)
@@ -97,11 +85,11 @@ function update_collision(disc, discs, queue)
     end    
 end
 
-# Initializes all collision at the start of the simulation
-function initialize_collisions(discs)
+# Initializes all collision at the start of the simulation given the disc array.
+function initialize_collisions(discs, clock)
     queue = PriorityQueue()
     for disc in discs
-        update_collision(disc, discs, queue)
+        update_collision(disc, discs, queue, clock)
     end
     return queue
 end             
@@ -111,14 +99,14 @@ end
 function update(queue, discs, clock)
     next = dequeue!(queue) 
     # Check if collision is valid first. If not try again
-    if (next.object1.c_count != next.count1) 
-        return nothing
-    end
-    if typeof(next.object2) != HoriWall && typeof(next.object2) != VertWall
-        if (next.object2.c_count != next.count2)
-            return nothing
-        end
-    end
+    # if (next.object1.c_count != next.count1) 
+    #     return nothing
+    # end
+    # if typeof(next.object2) != HoriWall && typeof(next.object2) != VertWall
+    #     if (next.object2.c_count != next.count2)
+    #         return nothing
+    #     end
+    # end
     # Updating positions of all discs
     for disc in discs 
         disc.pos = (disc.pos[1] + disc.vel[1]*next.time_until, disc.pos[2] + disc.vel[2]*next.time_until) 
@@ -127,21 +115,21 @@ function update(queue, discs, clock)
     # Updating velocities of involved discs
     if typeof(next.object2) == VertWall
         next.object1.vel = vert_wall(next.object1.vel)
-        update_collision(next.object1, discs, queue)
+        update_collision(next.object1, discs, queue, clock)
         #next.object1.c_count += 1
     elseif typeof(next.object2) == HoriWall
         next.object1.vel = hori_wall(next.object1.vel)
-        update_collision(next.object1, discs, queue)
+        update_collision(next.object1, discs, queue, clock)
         #next.object1.c_count += 1
     else
         temp1_vel = vel_two_discs_i(next.object1,next.object2)
         temp2_vel = vel_two_discs_j(next.object1,next.object2)
         next.object1.vel = temp1_vel
         next.object2.vel = temp2_vel
-        update_collision(next.object1, discs, queue)
-        update_collision(next.object2, discs, queue)
-        # next.object1.c_count += 1
-        # next.object2.c_count += 1
+        update_collision(next.object1, discs, queue, clock)
+        update_collision(next.object2, discs, queue, clock)
+        #next.object1.c_count += 1
+        #next.object2.c_count += 1
     end
     return nothing
 end
