@@ -23,7 +23,8 @@ clock = 0 # A timer of sorts. This is so the pq can keep track of which collisio
 
 disc1 = Disc((0.1, 0.5), (0.1,0.3), mass_i, 0.05, 0)
 disc2 = Disc((0.9, 0.5), (-0.02,0), mass_i, 0.05, 0)
-discs = [disc1, disc2]
+disc3 = Disc((0.7, 0.2), (-0.3, 0.5), mass_i, 0.05, 0)
+discs = [disc1, disc2, disc3]
 queue = initialize_collisions(discs)
 
 
@@ -35,6 +36,10 @@ queue = initialize_collisions(discs)
 # circles = circle.(discs)
 # plot(circles, xlim=(0,1), ylim=(0,1))
 
+function plotting_easy(circles)
+    plot(circles, legend=false, xlim=(0,1), ylim=(0,1))
+    Plots.frame(anim)
+end
 
 function move_til_next(queue, discs, clock, anim)
     startpoints = [disc.pos for disc in discs]
@@ -54,13 +59,13 @@ function move_til_next(queue, discs, clock, anim)
             push!(radii, discs[j].radius)
         end
         circles = circle.(x, y, radii)
-        plot(circles, legend=false, xlim=(0,1), ylim=(0,1))
-        Plots.frame(anim)
+        plotting_easy(circles)
     end
 end
 
+
 anim = Plots.Animation()
-for k in 1:10
+for k in 1:20
     move_til_next(queue, discs, clock, anim)
 end
 
