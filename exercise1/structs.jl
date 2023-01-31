@@ -21,3 +21,8 @@ mutable struct Collision
     count2::Int64
     time_until::Float64
 end
+
+# The timer 
+mutable struct Clock
+    time::Float64
+end
