@@ -34,10 +34,10 @@ function delta_t(i,j,v_i,v_j, rad_i, rad_j)
         dv_dx =  dot(delta_v(v_i, v_j), delta_x(i,j))
         dd = d(i,j, v_i, v_j, rad_i, rad_j)
         dv_dv =  dot(delta_v(v_i, v_j), delta_v(v_i, v_j))
-        println("dv_dx = $dv_dv")
-        println("dd = $dd")
-        println("dv_dv = $dv_dv")
-        println(- (dv_dx + sqrt(dd)) / dv_dv)
+        # println("dv_dx = $dv_dv")
+        # println("dd = $dd")
+        # println("dv_dv = $dv_dv")
+        # println(- (dv_dx + sqrt(dd)) / dv_dv)
         return - (dv_dx + sqrt(dd)) / dv_dv
     end
 end
@@ -118,12 +118,12 @@ function update(queue, discs, clock)
     # Check if collision is valid first. If not try again
     if (next.object1.c_count != next.count1) 
         #update_collision(next.object1, discs, queue, clock)
-        return nothing
+        return false
     end
     if typeof(next.object2) != HoriWall && typeof(next.object2) != VertWall
         if (next.object2.c_count != next.count2)
             #update_collision(next.object2, discs, queue, clock)
-            return nothing
+            return false
         end
     end
     # Updating positions of all discs
@@ -154,10 +154,23 @@ function update(queue, discs, clock)
         next.object2.c_count += 1
         update_collision(next.object1, discs, queue, clock)
         update_collision(next.object2, discs, queue, clock)
-        
     end
-    return nothing
+    return true
 end
-    
+
+function uniform_distribution(n, radius, random_mass=false, vel = ([0, 0.5])) 
+    gridsize = Int(1 / radius)
+    discs = []
+    for i in 1:n
+        pos = 0
+        while true    
+            pos = (rand(1:gridsize)*radius, rand(1:gridsize)*radius)
+            pos in [disc.pos for disc in discs] || break
+        end
+        temp = Disc(pos, (rand(vel), rand(vel)), mass_i, radius, 0)
+        push!(discs, temp)
+    end
+    return discs
+end
 
 

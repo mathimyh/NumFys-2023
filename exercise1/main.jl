@@ -18,19 +18,17 @@ end
 
 mass_i = 1
 mass_j = 0.01
-ksi = 0
+ksi = 1
 radius = 0.05
 
 
-disc1 = Disc((0.1, 0.5), (0.4,0), mass_i, 0.05, 0)
-disc2 = Disc((0.9, 0.5), (-0.4,0), mass_i, 0.05, 0)
-disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
-discs = [disc1, disc2]#, disc3]
-# discs = []
-# for i in 1:5
-#     temp = Disc((rand(), rand()), (rand((0.0,0.4)), rand((0.0,0.4))), mass_i, radius, 0)
-#     push!(discs, temp)
-# end
+# disc1 = Disc((0.1, 0.5), (0.4,0), mass_i, 0.05, 0)
+# disc2 = Disc((0.9, 0.5), (-0.4,0), mass_i, 0.05, 0)
+# disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
+# discs = [disc1, disc2]#, disc3]
+
+discs = uniform_distribution(5, radius)
+
 queue, clock = initialize_collisions(discs)
 
 
@@ -54,28 +52,30 @@ function move_til_next(queue, discs, clock, anim)
     end
     startpoints = [disc.pos for disc in discs]
     vels = [disc.vel for disc in discs]
-    println(([sqrt((vel[1])^2+(vel[2])^2) for vel in vels]))
+    # println(([sqrt((vel[1])^2+(vel[2])^2) for vel in vels]))
     moving_time = peek(queue)[1].time_until
     #println(queue, "\n")
-    update(queue, discs, clock)
+    moved = update(queue, discs, clock)
     x = []
     y = []
     radii = []
-    for i in 0:0.05:moving_time
-        circles = []
-        for j in 1:length(startpoints)
-            push!(x, startpoints[j][1] + vels[j][1]*i)
-            push!(y, startpoints[j][2] + vels[j][2]*i)
-            push!(radii, discs[j].radius)
+    if moved 
+        for i in 0:0.05:moving_time
+            circles = []
+            for j in 1:length(startpoints)
+                push!(x, startpoints[j][1] + vels[j][1]*i)
+                push!(y, startpoints[j][2] + vels[j][2]*i)
+                push!(radii, discs[j].radius)
+            end
+            circles = circle.(x, y, radii)
+            plotting_easy(circles)
         end
-        circles = circle.(x, y, radii)
-        plotting_easy(circles)
     end
 end
 
 
 anim = Plots.Animation()
-for k in 1:2
+for k in 1:800
     move_til_next(queue, discs, clock, anim)
 end
 
