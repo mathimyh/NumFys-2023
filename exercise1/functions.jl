@@ -62,9 +62,15 @@ function update_collision(disc, discs, queue, clock)
     for other in discs if other != disc
         temp = delta_t(disc.pos, other.pos, disc.vel, other.vel, disc.radius, other.radius)
         if !isnothing(temp)
-            time = temp
-            crash = other
-            enqueue!(queue, Collision(disc, crash, disc.c_count, crash.c_count, time) => time + clock.time)
+            if isnothing(time)
+                time = temp
+                crash = other
+            elseif temp < time
+                crash = other
+            end
+            if !isnothing(crash)
+                enqueue!(queue, Collision(disc, crash, disc.c_count, crash.c_count, time) => time + clock.time)
+            end
         end
         end
     end

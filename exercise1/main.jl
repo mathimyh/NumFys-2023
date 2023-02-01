@@ -22,8 +22,8 @@ ksi = 1
 radius = 0.04
 
 
-disc1 = Disc((0.1, 0.5), (0.2,0), mass_i, 0.01, 0)
-disc2 = Disc((0.9, 0.5), (-0.2,0), mass_i, 0.01, 0)
+disc1 = Disc((0.1, 0.5), (0.3,0), mass_i, 0.01, 0)
+disc2 = Disc((0.9, 0.5), (-0.3,0), mass_i, 0.01, 0)
 disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
 discs = [disc1, disc2]#, disc3]
 # discs = []
