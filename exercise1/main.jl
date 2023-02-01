@@ -30,7 +30,7 @@ radius_j = 0.005
 # disc4 = Disc((0.3, 0.8), (-0.1, -0.2), mass_i, radius_i, 0)
 # discs = [disc1, disc2, disc3, disc4]
 
-discs = uniform_distribution(30, radius_i)
+discs = uniform_distribution(5, radius_i)
 
 queue, clock = initialize_collisions(discs)
 
@@ -45,12 +45,12 @@ queue, clock = initialize_collisions(discs)
 
 
 anim = Plots.Animation()
-println("Energy at start: ", sum([1/2 * disc.mass * (disc.pos[1]^2+disc.pos[2]^2) for disc in discs]))
-for k in 1:5000
+println("Energy at start: ", sum([1/2 * disc.mass * (disc.vel[1]^2+disc.vel[2]^2) for disc in discs]))
+for k in 1:500
     move_til_next(queue, discs, clock, anim)
 end
-println("Energy at end: ", sum([1/2 * disc.mass * (disc.pos[1]^2+disc.pos[2]^2) for disc in discs]))
-gif(anim, "30_particles_highvel_simulation.mp4")
+println("Energy at end: ", sum([1/2 * disc.mass * (disc.vel[1]^2+disc.vel[2]^2) for disc in discs]))
+gif(anim, "anim2.gif")
 
 
 
