@@ -24,36 +24,33 @@ radius_i = 0.05
 radius_j = 0.005
 
 
-disc1 = Disc((0.5, 0.5), (0.1,-0.3), mass_i, radius_i, 0)
-disc2 = Disc((0.5, 0.1), (0,0.4), mass_j, radius_i, 0)
-disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
-disc4 = Disc((0.3, 0.8), (-0.1, -0.2), mass_i, radius_i, 0)
-discs = [disc1, disc2, disc3, disc4]
+# disc1 = Disc((0.5, 0.5), (0.1,-0.3), mass_i, radius_i, 0)
+# disc2 = Disc((0.5, 0.1), (0,0.4), mass_j, radius_i, 0)
+# disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
+# disc4 = Disc((0.3, 0.8), (-0.1, -0.2), mass_i, radius_i, 0)
+# discs = [disc1, disc2, disc3, disc4]
 
-# discs = uniform_distribution(30, radius_i)
-
+discs = uniform_distribution(30, radius_i)
 
 queue, clock = initialize_collisions(discs)
 
 
-# for i in 1:7
-#     println("\n", queue)
+# for i in 1:1
 #     update(queue, discs, clock)
-#     println("Clock: $clock")
 # end
 
 # circles = circle.(discs)
-# plot(circles, xlim=(0,1), ylim=(0,1))
+# plot(circles, xlim=(0,1), ylim=(0,1), legend=false)
 
 
 
 anim = Plots.Animation()
 println("Energy at start: ", sum([1/2 * disc.mass * (disc.pos[1]^2+disc.pos[2]^2) for disc in discs]))
-for k in 1:200
+for k in 1:5000
     move_til_next(queue, discs, clock, anim)
 end
 println("Energy at end: ", sum([1/2 * disc.mass * (disc.pos[1]^2+disc.pos[2]^2) for disc in discs]))
-gif(anim, "anim2.gif")
+gif(anim, "30_particles_highvel_simulation.mp4")
 
 
 

@@ -147,6 +147,7 @@ function update(queue, discs, clock)
     return true
 end
 
+# Initalizes a system with n uniform sized discs with a given radius. 
 function uniform_distribution(n, radius, random_mass=false) 
     masses = []
     if random_mass
@@ -158,16 +159,16 @@ function uniform_distribution(n, radius, random_mass=false)
            push!(masses, 1)
         end
     end 
-    gridsize = Int(10 / radius)
+    gridsize = Int(1 / (2*radius))
     print(gridsize)
     discs = []
     for i in 1:n
         pos = 0
         while true
-            pos = (rand(1:(gridsize-1)) * radius/10, rand(1:(gridsize-1)) * radius)
+            pos = (rand(1:(gridsize-1)) * 2*radius, rand(1:(gridsize-1)) *2* radius)
             pos in [disc.pos for disc in discs] || break
         end
-        disc = Disc(pos, (rand(-0.5:0.01:0.5), rand(-0.5:0.01:0.5)), masses[i], radius, 0)
+        disc = Disc(pos, (rand(-10:0.01:10), rand(-10:0.01:10)), masses[i], radius, 0)
         push!(discs, disc)
     end
     return discs

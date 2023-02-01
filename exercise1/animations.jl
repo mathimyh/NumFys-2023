@@ -1,5 +1,5 @@
 function plotting_easy(circles)
-    plot(circles, legend=false, xlim=(0,1), ylim=(0,1))
+    plot(circles, legend=false, xlim=(0,1), ylim=(0,1), aspect=:equal,xticks=[],yticks=[], framestyle=:box)
     Plots.frame(anim)
 end
 
