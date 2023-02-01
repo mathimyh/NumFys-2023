@@ -56,49 +56,33 @@ function vel_two_discs_i(disc_i, disc_j)
 end
 
 function vel_two_discs_j(disc_i, disc_j)
-    vel = (disc_j.vel[1] - big_factor_j(disc_i, disc_j) * delta_x(disc_i.pos, disc_j.pos)[1], disc_i.vel[2] + big_factor_j(disc_i, disc_j) * delta_x(disc_i.pos, disc_j.pos)[2])
+    vel = (disc_j.vel[1] - big_factor_j(disc_i, disc_j) * delta_x(disc_i.pos, disc_j.pos)[1], disc_j.vel[2] - big_factor_j(disc_i, disc_j) * delta_x(disc_i.pos, disc_j.pos)[2])
     return vel 
 end
 
-# The function that finds the earliest collision for a disc. Updates the queue as well
+# The function that finds the collisions for discs, then updates the queue.
 function update_collision(disc, discs, queue, clock)
-    time::Float64 = 10^8
-    crash = nothing
+    # I check if discs collide with other discs. All possible collision are put into the queue!!!
     for other in discs if other != disc
-        temp = delta_t(disc.pos, other.pos, disc.vel, other.vel, disc.radius, other.radius)
-        if !isnothing(temp)
-            if temp < time
-                time = temp
-                crash = other
-            end
-        end
-    end
-    end
-    temp = hori_delta_t(disc.radius, disc.pos[2], disc.vel[2])
-    if !isnothing(temp)
-        if temp < time
-            time = temp
-            crash = HoriWall()
-        end
-    end
-    temp = vert_delta_t(disc.radius, disc.pos[1], disc.vel[1])
-    if !isnothing(temp)
-        if temp < time
-            time = temp
-            crash = VertWall()
-        end
-    end
-    if isnothing(crash)
-        return nothing
-    end
-    if (typeof(crash) != Disc)
-        enqueue!(queue, Collision(disc, crash, disc.c_count, 0, time) => time + clock.time)
-    else
-        # colls = [(coll.object1.pos, coll.object2.pos) for coll in collect(keys(queue)) if typeof(coll.object2) == Disc]
-        # if !((crash.pos, disc.pos) in colls) # Dont add the same collision twice
+        time = delta_t(disc.pos, other.pos, disc.vel, other.vel, disc.radius, other.radius)
+        if !isnothing(time) 
+            crash = other
             enqueue!(queue, Collision(disc, crash, disc.c_count, crash.c_count, time) => time + clock.time)
-        # end
-    end    
+        end
+    end;end
+    
+    # Now check for both walls. 
+    time = hori_delta_t(disc.radius, disc.pos[2], disc.vel[2])
+    if !isnothing(time) 
+        crash = HoriWall()
+        enqueue!(queue, Collision(disc, crash, disc.c_count, 0, time) => time + clock.time)
+    end
+    time = vert_delta_t(disc.radius, disc.pos[1], disc.vel[1])
+    if !isnothing(time)
+        crash = VertWall()
+        enqueue!(queue, Collision(disc, crash, disc.c_count, 0, time) => time + clock.time)
+    end
+    return nothing   
 end
 
 # Initializes all collision at the start of the simulation given the disc array.
@@ -126,6 +110,11 @@ function update(queue, discs, clock)
             return false
         end
     end
+
+    # Might be some trouble that the time is 0
+    # if next.time_until == 0
+    #     return false
+    # end
     # Updating positions of all discs
     for collision in collect(keys(queue))
         collision.time_until -= next.time_until
@@ -158,17 +147,28 @@ function update(queue, discs, clock)
     return true
 end
 
-function uniform_distribution(n, radius, random_mass=false, vel = ([0, 0.5])) 
-    gridsize = Int(1 / radius)
+function uniform_distribution(n, radius, random_mass=false) 
+    masses = []
+    if random_mass
+        for i in 1:n
+            push!(masses, rand([0.1,1]))
+        end
+    else
+        for i in 1:n
+           push!(masses, 1)
+        end
+    end 
+    gridsize = Int(10 / radius)
+    print(gridsize)
     discs = []
     for i in 1:n
         pos = 0
-        while true    
-            pos = (rand(1:gridsize)*radius, rand(1:gridsize)*radius)
+        while true
+            pos = (rand(1:(gridsize-1)) * radius/10, rand(1:(gridsize-1)) * radius)
             pos in [disc.pos for disc in discs] || break
         end
-        temp = Disc(pos, (rand(vel), rand(vel)), mass_i, radius, 0)
-        push!(discs, temp)
+        disc = Disc(pos, (rand(-0.5:0.01:0.5), rand(-0.5:0.01:0.5)), masses[i], radius, 0)
+        push!(discs, disc)
     end
     return discs
 end
