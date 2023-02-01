@@ -1,5 +1,6 @@
 include("structs.jl")
 include("functions.jl")
+include("animations.jl")
 
 using Random
 using DataStructures
@@ -17,17 +18,20 @@ function circle(x, y , radius; n=30)
 end
 
 mass_i = 1
-mass_j = 0.01
+mass_j = 1
 ksi = 1
-radius = 0.05
+radius_i = 0.05
+radius_j = 0.005
 
 
-# disc1 = Disc((0.1, 0.5), (0.4,0), mass_i, 0.05, 0)
-# disc2 = Disc((0.9, 0.5), (-0.4,0), mass_i, 0.05, 0)
-# disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
-# discs = [disc1, disc2]#, disc3]
+disc1 = Disc((0.5, 0.5), (0.1,-0.3), mass_i, radius_i, 0)
+disc2 = Disc((0.5, 0.1), (0,0.4), mass_j, radius_i, 0)
+disc3 = Disc((0.7, 0.2), (0.38, 0.32), mass_i, 0.05, 0)
+disc4 = Disc((0.3, 0.8), (-0.1, -0.2), mass_i, radius_i, 0)
+discs = [disc1, disc2, disc3, disc4]
 
-discs = uniform_distribution(5, radius)
+# discs = uniform_distribution(30, radius_i)
+
 
 queue, clock = initialize_collisions(discs)
 
@@ -41,54 +45,15 @@ queue, clock = initialize_collisions(discs)
 # circles = circle.(discs)
 # plot(circles, xlim=(0,1), ylim=(0,1))
 
-function plotting_easy(circles)
-    plot(circles, legend=false, xlim=(0,1), ylim=(0,1))
-    Plots.frame(anim)
-end
-
-function move_til_next(queue, discs, clock, anim)
-    if length(queue) == 0
-        return nothing
-    end
-    startpoints = [disc.pos for disc in discs]
-    vels = [disc.vel for disc in discs]
-    # println(([sqrt((vel[1])^2+(vel[2])^2) for vel in vels]))
-    moving_time = peek(queue)[1].time_until
-    #println(queue, "\n")
-    moved = update(queue, discs, clock)
-    x = []
-    y = []
-    radii = []
-    if moved 
-        for i in 0:0.05:moving_time
-            circles = []
-            for j in 1:length(startpoints)
-                push!(x, startpoints[j][1] + vels[j][1]*i)
-                push!(y, startpoints[j][2] + vels[j][2]*i)
-                push!(radii, discs[j].radius)
-            end
-            circles = circle.(x, y, radii)
-            plotting_easy(circles)
-        end
-    end
-end
 
 
 anim = Plots.Animation()
-for k in 1:800
+println("Energy at start: ", sum([1/2 * disc.mass * (disc.pos[1]^2+disc.pos[2]^2) for disc in discs]))
+for k in 1:200
     move_til_next(queue, discs, clock, anim)
 end
-
-
+println("Energy at end: ", sum([1/2 * disc.mass * (disc.pos[1]^2+disc.pos[2]^2) for disc in discs]))
 gif(anim, "anim2.gif")
-
-# anim = @animate for _ in 1:steps
-#     move_til_next(queue, discs, clock)
-# end
-
-# gif(anim, "anim.gif")
-
-
 
 
 
