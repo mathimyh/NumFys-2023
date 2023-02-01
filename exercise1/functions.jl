@@ -24,7 +24,7 @@ end
 delta_x((x_i, y_i),(x_j, y_j)) = (x_j-x_i, y_j-y_i)
 delta_v((v_xi, v_yi), (v_xj, v_yj)) = (v_xj-v_xi, v_yj-v_yi)
 R_squared((x_i,y_i), (x_j, y_j)) = (x_j-x_i)^2 + (y_j-y_i)^2
-d(i,j,v_i,v_j, rad_i, rad_j) = (dot(delta_v(v_i, v_j), delta_x(i,j)))^2 - (dot(delta_v(v_i, v_j), delta_v(v_i, v_j))) * (dot(delta_x(i,j), delta_x(i,j))-(rad_i+rad_j+10^-4)^2)
+d(i,j,v_i,v_j, rad_i, rad_j) = (dot(delta_v(v_i, v_j), delta_x(i,j)))^2 - (dot(delta_v(v_i, v_j), delta_v(v_i, v_j))) * (dot(delta_x(i,j), delta_x(i,j))-(rad_i+rad_j)^2)
 function delta_t(i,j,v_i,v_j, rad_i, rad_j)
     if dot(delta_v(v_i, v_j), delta_x(i,j)) >= 0
         return nothing
