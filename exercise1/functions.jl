@@ -168,7 +168,7 @@ function uniform_distribution(n, radius, random_mass=false)
             pos = (rand(1:(gridsize-1)) * 2*radius, rand(1:(gridsize-1)) *2* radius)
             pos in [disc.pos for disc in discs] || break
         end
-        disc = Disc(pos, (rand(-10:0.01:10), rand(-10:0.01:10)), masses[i], radius, 0)
+        disc = Disc(pos, (rand(-1:0.01:1), rand(-1:0.01:1)), masses[i], radius, 0)
         push!(discs, disc)
     end
     return discs
