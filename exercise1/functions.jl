@@ -183,9 +183,9 @@ function problem1()
     queue, clock = initialize_collisions(discs)
 
     vels = []
-    for i in 1:50000
+    for i in 1:500000
         update(queue, discs, clock)
-        if (i == 40000) || (i == 42500) || (i == 45000) || (i == 47500) || (i == 50000)
+        if (i == 400000) || (i == 425000) || (i == 450000) || (i == 475000) || (i == 500000)
             for disc in discs
                 push!(vels, sqrt(disc.vel[1]^2+disc.vel[2]^2))
             end
