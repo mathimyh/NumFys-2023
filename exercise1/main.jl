@@ -11,6 +11,6 @@ using ProfileView
 ksi = 1
 
 
-@time problem1(500)
+@time problem1(5000)
 # ProfileView.@profview problem1(10)
 # ProfileView.@profview problem1(500)

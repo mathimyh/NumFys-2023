@@ -218,11 +218,11 @@ function problem1(n::Int64)
     vels = []
     for i in 1:(n*10)
         update(queue, discs, clock)
-        if (i == 40000) || (i == 42500) || (i == 45000) || (i == 47500) || (i == 50000)
-            for disc in discs
-                push!(vels, sqrt(disc.vel[1]^2+disc.vel[2]^2))
-            end
-        end
+        # if (i == 40000) || (i == 42500) || (i == 45000) || (i == 47500) || (i == 50000)
+        #     for disc in discs
+        #         push!(vels, sqrt(disc.vel[1]^2+disc.vel[2]^2))
+        #     end
+        # end
     end
 
     # histogram(vels)
