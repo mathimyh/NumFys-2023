@@ -9,4 +9,4 @@ using Plots
 
 ksi = 1
 
-@time problem1(50)
+@time problem1(500)
