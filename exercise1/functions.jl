@@ -147,8 +147,8 @@ function update(queue, discs, clock)
     return true
 end
 
-# Initalizes a system with n uniform sized discs with a given radius. 
-function uniform_distribution(n, radius, random_mass=false) 
+# Initalizes a system with n uniform sized discs with a given radius. The velocities are random
+function uniform_distribution(n, radius, random_mass=false, vel = 1) 
     masses = []
     if random_mass
         for i in 1:n
@@ -168,10 +168,32 @@ function uniform_distribution(n, radius, random_mass=false)
             pos = (rand(1:(gridsize-1)) * 2*radius, rand(1:(gridsize-1)) *2* radius)
             pos in [disc.pos for disc in discs] || break
         end
-        disc = Disc(pos, (rand(-1:0.01:1), rand(-1:0.01:1)), masses[i], radius, 0)
+        disc = Disc(pos, (vel*rand([0, 2*pi]), vel*rand([0, 2*pi])), masses[i], radius, 0)
         push!(discs, disc)
     end
     return discs
+end
+
+
+function problem1()
+    n = 5000
+    radius = 1 / (2*n)
+
+    discs = uniform_distribution(n, radius)
+    queue, clock = initialize_collisions(discs)
+
+    vels = []
+    for i in 1:50000
+        update(queue, discs, clock)
+        if (i == 40000) || (i == 42500) || (i == 45000) || (i == 47500) || (i == 50000)
+            for disc in discs
+                push!(vels, sqrt(disc.vel[1]^2+disc.vel[2]^2))
+            end
+        end
+    end
+
+    histogram(vels)
+    savefig("problem1.png")
 end
 
 

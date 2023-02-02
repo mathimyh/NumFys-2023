@@ -1,3 +1,13 @@
+function circle(disc; n=30)
+    θ = 0:360÷n:360
+    Plots.Shape(disc.radius*sind.(θ) .+ disc.pos[1], disc.radius*cosd.(θ) .+ disc.pos[2])
+end
+
+function circle(x, y , radius; n=30)
+    θ = 0:360÷n:360
+    Plots.Shape(radius*sind.(θ) .+ x, radius*cosd.(θ) .+ y)
+end
+
 function plotting_easy(circles)
     plot(circles, legend=false, xlim=(0,1), ylim=(0,1), aspect=:equal,xticks=[],yticks=[], framestyle=:box)
     Plots.frame(anim)
@@ -27,6 +37,23 @@ function move_til_next(queue, discs, clock, anim)
             circles = circle.(x, y, radii)
             plotting_easy(circles)
         end
+    end   
+end
+
+function show_still(n)
+    for i in 1:n
+        update(queue, discs, clock)
     end
-    
+    circles = circle.(discs)
+    plot(circles, xlim=(0,1), ylim=(0,1), legend=false)
+end
+
+function animate_it(n, name)
+    anim = Plots.Animation()
+    #println("Energy at start: ", sum([1/2 * disc.mass * (disc.vel[1]^2+disc.vel[2]^2) for disc in discs]))
+    for k in 1:n
+        move_til_next(queue, discs, clock, anim)
+    end
+    #println("Energy at end: ", sum([1/2 * disc.mass * (disc.vel[1]^2+disc.vel[2]^2) for disc in discs]))
+    gif(anim, name)
 end
