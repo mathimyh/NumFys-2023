@@ -8,7 +8,7 @@ function circle(x, y , radius; n=30)
     Plots.Shape(radius*sind.(θ) .+ x, radius*cosd.(θ) .+ y)
 end
 
-function plotting_easy(circles)
+function plotting_easy(circles, anim)
     plot(circles, legend=false, xlim=(0,1), ylim=(0,1), aspect=:equal,xticks=[],yticks=[], framestyle=:box)
     Plots.frame(anim)
 end
@@ -20,9 +20,10 @@ function move_til_next(queue, discs, clock, anim)
     startpoints = [disc.pos for disc in discs]
     vels = [disc.vel for disc in discs]
     # println(([sqrt((vel[1])^2+(vel[2])^2) for vel in vels]))
-    moving_time = peek(queue)[1].time_until
     #println(queue, "\n")
+    time0 = clock.time
     moved = update(queue, discs, clock)
+    moving_time = clock.time - time0
     x = []
     y = []
     radii = []
@@ -35,7 +36,7 @@ function move_til_next(queue, discs, clock, anim)
                 push!(radii, discs[j].radius)
             end
             circles = circle.(x, y, radii)
-            plotting_easy(circles)
+            plotting_easy(circles, anim)
         end
     end   
 end
