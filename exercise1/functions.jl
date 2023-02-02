@@ -208,7 +208,8 @@ function uniform_distribution(n, radius, random_mass=false, vel = 1)
 end
 
 
-function problem1(n)
+function problem1(n::Int64)
+    n = 5000
     radius = 1 / (2*n)
 
     discs::Vector{Disc} = uniform_distribution(n, radius)
