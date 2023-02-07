@@ -209,7 +209,6 @@ end
 
 
 function problem1(n::Int64)
-    n = 5000
     radius = 1 / (2*n)
 
     discs::Vector{Disc} = uniform_distribution(n, radius)
@@ -218,15 +217,15 @@ function problem1(n::Int64)
     vels = []
     for i in 1:(n*10)
         update(queue, discs, clock)
-        # if (i == 40000) || (i == 42500) || (i == 45000) || (i == 47500) || (i == 50000)
-        #     for disc in discs
-        #         push!(vels, sqrt(disc.vel[1]^2+disc.vel[2]^2))
-        #     end
-        # end
+        if (i == n*10 - 1000) || (i == n*10 - 750) || (i == n*10 - 500 ) || (i == n*10 - 250) || (i == n*10)
+            for disc in discs
+                push!(vels, sqrt(disc.vel[1]^2+disc.vel[2]^2))
+            end
+        end
     end
 
-    # histogram(vels)
-    # savefig("problem1.png")
+    histogram(vels)
+    savefig("problem1.png")
 end
 
 
