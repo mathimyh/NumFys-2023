@@ -6,7 +6,11 @@ using Random
 using DataStructures
 using LinearAlgebra
 using Plots
+using ProfileView
+
 
 ksi = 1
 
-@time problem1(500)
+@time problem1(10000)
+# ProfileView.@profview problem1(10)
+# ProfileView.@profview problem1(5000)
