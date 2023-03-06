@@ -1,7 +1,7 @@
 # The struct describing the discs. They have position, velocity, mass, radius and collision count.
 mutable struct Disc
-    pos::Tuple{Float64, Float64}
-    vel::Tuple{Float64, Float64}
+    pos::Vector{Float64}
+    vel::Vector{Float64}
     mass::Float64
     radius::Float64
     c_count::Int64
@@ -19,7 +19,7 @@ mutable struct Collision
     object2
     count1::Int64
     count2::Int64
-    time_until::Float64
+    crash_time::Float64
 end
 
 # The timer 
