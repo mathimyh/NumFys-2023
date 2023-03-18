@@ -60,6 +60,7 @@ function make_lattice(l::Int64, fractal)
     y = trunc.(Int64, 4^l .* [tuple[2] for tuple in fractal])
     borders = (tuple.(x,y))
 
+
     # Finding the borders for the loops
     min_x = minimum(x)
     max_x = maximum(x)
@@ -87,7 +88,6 @@ function make_lattice(l::Int64, fractal)
     point0 = (ceil(Int64, x_size/2), ceil(Int64, y_size/2))
     search(point0, lattice)
 
-
     for i in 1:x_size
         for j in 1:y_size
             if lattice[i,j] == none::GridPoint
@@ -96,8 +96,9 @@ function make_lattice(l::Int64, fractal)
         end
     end
 
-    return lattice
+    return lattice, x_size
 end
+
 
 
 
