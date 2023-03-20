@@ -56,4 +56,4 @@ end
 # ProfileView.@profview(problem4(1,1))
 # ProfileView.@profview(problem4(2,5))
 
-problem4(3,5)
+(problem4(2,2))

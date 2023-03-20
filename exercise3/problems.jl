@@ -7,15 +7,15 @@ function problem4(l::Int64, excited::Int64)
     for i in 1:x_size
         for j in 1:x_size
             if lattice[i,j] == inside::GridPoint
-                equation[indexer, (i-1)*x_size+j] = -4
+                equation[indexer, (i-1)*x_size+j] = -4 / (x_size^2)
             end; if j > 1 && lattice[i,j-1] == inside::GridPoint
-                equation[indexer, (i-1)*x_size+j-1] = 1
+                equation[indexer, (i-1)*x_size+j-1] = 1 / (x_size^2)
             end; if j < x_size && lattice[i,j+1] == inside::GridPoint
-                equation[indexer, (i-1)*x_size+j+1] = 1
+                equation[indexer, (i-1)*x_size+j+1] = 1 / (x_size^2)
             end; if i > 1 && lattice[i-1,j] == inside::GridPoint
-                equation[indexer, (i-2)*x_size+j] = 1
+                equation[indexer, (i-2)*x_size+j] = 1 / (x_size^2)
             end; if i < x_size && lattice[i+1,j] == inside::GridPoint
-                equation[indexer, (i)*x_size+j] = 1
+                equation[indexer, (i)*x_size+j] = 1 / (x_size^2)
             end; indexer += 1
         end
     end
