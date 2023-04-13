@@ -70,6 +70,7 @@ function make_lattice(l::Int64, fractal)
     x_size = trunc(Int64, max_x - min_x) + 1
     y_size = trunc(Int64, max_y - min_y) + 1
 
+
     # Initializing an undefined lattice with correct size
     lattice = Matrix{GridPoint}(undef, x_size, y_size)
     # Iterating through each point, set it to correct type
@@ -99,8 +100,14 @@ function make_lattice(l::Int64, fractal)
     return lattice, x_size
 end
 
+function draw_fractal(l::Int64)
+    points = Koch(l)
+    x = [tuple[1] for tuple in points]
+    y = [tuple[2] for tuple in points]
+    Plots.plot(x,y)
+end
 
-
+# delta_N(w, A) = 
 
 
 
