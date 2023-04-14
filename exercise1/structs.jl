@@ -1,4 +1,4 @@
-# The struct describing the discs. They have position, velocity, mass, radius and collision count.
+# Make a struct for each disc. They have position, velocity, mass, radius and collision count
 mutable struct Disc
     pos::Vector{Float64}
     vel::Vector{Float64}
@@ -13,7 +13,8 @@ end
 struct HoriWall
 end
 
-# Make the structs for each collision. 
+# Make the structs for each collision. A collision has two objects, their collision counts at the moment the collision
+# is calculated, and the time when the collision is supposed to happen. 
 mutable struct Collision
     object1
     object2

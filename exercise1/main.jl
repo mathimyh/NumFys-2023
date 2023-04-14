@@ -1,5 +1,6 @@
 include("structs.jl")
-include("functions.jl")
+include("phys_functions.jl")
+include("sys_functions.jl")
 include("animations.jl")
 include("problems.jl")
 

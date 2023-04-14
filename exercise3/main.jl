@@ -17,6 +17,6 @@ plotlyjs()
 # ProfileView.@profview(problem4(1,1))
 # ProfileView.@profview(problem4(2,5))
 
-#problem4(4,5)
-problem7(3,6)
+problem4(3,8)
+#problem7(3,9)
 #draw_fractal(1)
