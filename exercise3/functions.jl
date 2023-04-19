@@ -107,7 +107,44 @@ function draw_fractal(l::Int64)
     Plots.plot(x,y)
 end
 
-# delta_N(w, A) = 
+function remove_zeros(matty, n::Int)
+    # Get the column pointers and non-zero values
+    colptr = A.colptr
+    nzval = A.nzval
+
+    # Initialize a boolean array of zero columns
+    zero_cols = falses(size(A, 2))
+
+    # Loop over the columns and check if they are zero
+    for j in 1:size(A, 2)
+        # Get the range of non-zero elements in the column
+        range = nzrange(colptr[j], colptr[j+1]-1)
+        
+        # If the range is empty, then the column is a zero column
+        if isempty(range) || all(nzval[range] .== 0)
+            zero_cols[j] = true
+        end
+    end
+end
+    
+    return matty, indices
+end
+
+function add_back_zeros(eigfn::Array{Float64,1}, indices::BitArray{1}, n::Int)
+    # Create a new array of zeros with the same shape as the original matrix
+    res = zeros(n^2)
+
+    # Copy the non-zero values from the eigenvector to the appropriate indices in the new array
+    nz_rows, nz_cols = find(indices)
+    for i = 1:length(nz_rows)
+        index = sub2ind((n,n), nz_rows[i], nz_cols[i])
+        res[index] = eigfn[i]
+    end
+
+    return res
+end
+
+
 
 
 
