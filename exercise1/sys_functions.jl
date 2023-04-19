@@ -1,70 +1,16 @@
-## First define functions for wall collisions
-vert_wall(disc) = [-ksi*disc.vel[1], ksi*disc.vel[2]]
-hori_wall(disc) = [ksi*disc.vel[1], -ksi*disc.vel[2]]
-function vert_delta_t(disc)
-    if disc.vel[1] == 0
-        return nothing
-    elseif disc.vel[1] > 0
-        return (1-disc.radius-disc.pos[1]) / disc.vel[1]
-    else
-        return (disc.radius-disc.pos[1]) / disc.vel[1]
-    end
-end
-function hori_delta_t(disc)
-    if disc.vel[2] == 0
-        return nothing
-    elseif disc.vel[2] > 0
-        return (1-disc.radius-disc.pos[2]) / disc.vel[2]
-    else
-        return (disc.radius-disc.pos[2]) / disc.vel[2]
-    end
-end
+### HERE ALL FUNCTIONS FOR THE SYSTEM ITSELF ARE DEFINED
 
-## Then functions for two particle collisions
-delta_x(disc_i, disc_j) = [disc_j.pos[1]-disc_i.pos[1], disc_j.pos[2]-disc_i.pos[2]]
-delta_v(disc_i, disc_j) = [disc_j.vel[1]-disc_i.vel[1], disc_j.vel[2]-disc_i.vel[2]]
-# R_squared((x_i,y_i), (x_j, y_) = (x_j-x_i)^2 + (y_j-y_i)^2
-d(disc_i, disc_j) = (dot(delta_v(disc_i, disc_j), delta_x(disc_i,disc_j)))^2 - (dot(delta_v(disc_i, disc_j), delta_v(disc_i, disc_j))) * (dot(delta_x(disc_i,disc_j), delta_x(disc_i,disc_j))-(disc_i.radius+disc_j.radius)^2)
-function delta_t(disc_i, disc_j)
-    if dot(delta_v(disc_i, disc_j), delta_x(disc_i,disc_j)) >= 0
-        return nothing
-    elseif d(disc_i, disc_j) <= 0
-        return nothing
-    else
-        dv_dx =  dot(delta_v(disc_i, disc_j), delta_x(disc_i,disc_j))
-        dd = d(disc_i, disc_j)
-        dv_dv =  dot(delta_v(disc_i, disc_j), delta_v(disc_i, disc_j))
-        return - (dv_dx + sqrt(dd)) / dv_dv
-    end
-end
-
-
-function big_factor_i(disc_i, disc_j)
-    return (1+ksi) * (disc_j.mass/(disc_i.mass+disc_j.mass)) * (dot(delta_v(disc_i, disc_j), delta_x(disc_i, disc_j))/(disc_i.radius+disc_j.radius)^2)
-end
-
-function big_factor_j(disc_i, disc_j)
-    return (1+ksi) * (disc_i.mass/(disc_i.mass+disc_j.mass)) * (dot(delta_v(disc_i, disc_j), delta_x(disc_i, disc_j))/((disc_i.radius+disc_j.radius)^2))
-end
-
-function vel_two_discs_i(disc_i, disc_j)
-    vel = [disc_i.vel[1] + big_factor_i(disc_i, disc_j) * delta_x(disc_i, disc_j)[1], disc_i.vel[2] + big_factor_i(disc_i, disc_j) * delta_x(disc_i, disc_j)[2]]
-    return vel
-end
-
-function vel_two_discs_j(disc_i, disc_j)
-    vel = [disc_j.vel[1] - big_factor_j(disc_i, disc_j) * delta_x(disc_i, disc_j)[1], disc_j.vel[2] - big_factor_j(disc_i, disc_j) * delta_x(disc_i, disc_j)[2]]
-    return vel 
-end
-
-# Changing the position of each disc function
+# Changing the position of each disc after a collision
 function change_pos(disc, time_spent)
     disc.pos = disc.pos .+ (disc.vel .* time_spent)
 end 
 
-# The function that finds the collisions for discs, then updates the queue.
+
+# The function that finds every possible collision for a disc, then updates the queue.
+# ALL possible collisions are put into the queue. 
 function update_collision(discs, queue, clock::Clock, j::Int64)
-    # I check if discs collide with other discs. All possible collision are put into the queue!!!
+    
+    # First checking disc-disc collisions
     disc_len = length(discs)
     for i in 1:disc_len if i != j
         time = delta_t(discs[i], discs[j])
@@ -73,7 +19,7 @@ function update_collision(discs, queue, clock::Clock, j::Int64)
         end
     end;end
     
-    # Now check for both walls. 
+    # Now check disc-wall collisions
     time = hori_delta_t(discs[j])
     if !isnothing(time) 
         crash = HoriWall()
@@ -84,22 +30,15 @@ function update_collision(discs, queue, clock::Clock, j::Int64)
         crash = VertWall()
         enqueue!(queue, Collision(discs[j], crash, discs[j].c_count, 0, time + clock.time) => time + clock.time)
     end
+
+
     return nothing   
 end
 
-# Initializes all collision at the start of the simulation given the disc array.
-function initialize_collisions(discs)
-    clock = Clock(0)
-    queue = PriorityQueue()
-    len = length(discs)
-    for j in 1:len
-        update_collision(discs, queue, clock, j)
-    end
-    return queue, clock
-end  
-
+# This is the same function that finds every collision for a disc, however it takes in the disc ITSELF
+# as a parameter and not the index of the disc. Due to Julia not having pointers the two functions were necessary 
+# to use the disc array as pass by reference, improving performance
 function update_collision2(disc::Disc, discs, queue, clock::Clock)
-    # I check if discs collide with other discs. All possible collision are put into the queue!!!
     disc_len = length(discs)
     for i in 1:disc_len if discs[i] != disc
         time = delta_t(discs[i], disc)
@@ -107,8 +46,7 @@ function update_collision2(disc::Disc, discs, queue, clock::Clock)
             enqueue!(queue, Collision(disc, discs[i], disc.c_count, discs[i].c_count, time + clock.time) => time + clock.time)
         end
     end;end
-    
-    # Now check for both walls. 
+     
     time = hori_delta_t(disc)
     if !isnothing(time) 
         crash = HoriWall()
@@ -122,7 +60,8 @@ function update_collision2(disc::Disc, discs, queue, clock::Clock)
     return nothing   
 end
 
-# Initializes all collision at the start of the simulation given the disc array.
+
+# Initializes all collisions at the start of a simulation given an array of discs.
 function initialize_collisions(discs)
     clock = Clock(0)
     queue = PriorityQueue()
@@ -131,34 +70,31 @@ function initialize_collisions(discs)
         update_collision(discs, queue, clock, j)
     end
     return queue, clock
-end 
+end  
 
 
 ## The function that moves the system to the next collision. 
 function update(queue, discs, clock)
     next = dequeue!(queue) 
-    # Check if collision is valid first. If not try again
+    
+    # Check if collision counts are the same. If not the collision is invalid, and you need to try again.
     if (next.object1.c_count != next.count1)
-        #update_collision(next.object1, discs, queue, clock)
         return false
     end
     if typeof(next.object2) != HoriWall && typeof(next.object2) != VertWall
         if (next.object2.c_count != next.count2)
-            #update_collision(next.object2, discs, queue, clock)
             return false
         end
     end
 
+    # Find the time spent between the collisions, and update to the new time
     last_time = clock.time
     clock.time = next.crash_time
     time_spent = clock.time - last_time
     
     change_pos.(discs, time_spent)
     
-    # for disc in discs 
-    #     disc.pos = (disc.pos[1] + disc.vel[1]*time_spent, disc.pos[2] + disc.vel[2]*time_spent) 
-    # end
-    # Updating velocities of involved discs
+    # Updating velocities and collision counts of involved objects
     if typeof(next.object2) == VertWall
         next.object1.vel = vert_wall(next.object1)
         next.object1.c_count += 1
@@ -181,6 +117,7 @@ function update(queue, discs, clock)
 end
 
 # Initalizes a system with n uniform sized discs with a given radius. The velocities are random
+# Can either make all discs have same mass, or half have 4 times the mass of the other half
 function uniform_distribution(n, radius, diff_mass=false, vel = 1) 
     masses = []
     if diff_mass

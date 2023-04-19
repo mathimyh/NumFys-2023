@@ -1,3 +1,7 @@
+## DEFINING A FUNCTION FOR EACH PROBLEM ######
+
+
+# Problem 1 takes in n number of discs and m number of collisions until end of simulation
 function problem1(n::Int64, m::Int64)
     p = make_subplots(rows = 1, cols = 2)
     
@@ -18,11 +22,11 @@ function problem1(n::Int64, m::Int64)
         end
     end
 
-
     add_trace!(p, PlotlyJS.histogram(x=vels), row=1, col=2)
     PlotlyJS.savefig(p, "problem1.png")
 end
 
+# Problem 2 also takes in n number of discs, and m number of collisions
 function problem2(n::Int64, m::Int64)
     p = make_subplots(rows = 2, cols = 2)
     
@@ -56,7 +60,7 @@ function problem2(n::Int64, m::Int64)
 
 end
 
-
+# 
 function problem3(n::Int64, m::Int64)
     p = make_subplots(rows = 2, cols = 2)
     
