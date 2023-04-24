@@ -8,7 +8,7 @@ using LinearAlgebra, ForwardDiff
 using DataStructures
 using Random, Distributions
 using CalculusWithJulia
-using Plots, Unitful
+using Plots, Unitful  
 using ProfileView
 using SparseArrays, Arpack
 using CSV, DataFrames
