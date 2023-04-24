@@ -1,6 +1,7 @@
 include("functions.jl")
 include("plotting.jl")
 include("structs.jl")
+include("systems.jl")
 
 using LinearAlgebra, ForwardDiff
 using DataStructures
@@ -23,6 +24,21 @@ const b::Float64 = mu_b / mu
 
 S = [Magnet((0.5, 0.5, 0.5), [0.5, 0.5, 1/sqrt(2)])]#, Magnet((0.5, 0.7, 0.5), [0.5, -0.5, 1/sqrt(2)])]
 
+# @gif for i in 1:500
+#     Heun(S, J)
+#     x = vec([s.pos[1] for s in S])
+#     y = vec([s.pos[2] for s in S])
+#     z = vec([s.pos[3] for s in S])
+#     u = vec([s.spin[1] for s in S]) 
+#     v = vec([s.spin[2] for s in S])
+#     w = vec([s.spin[3] for s in S])
+#     # spin1 = S[1].spin
+#     # println("$spin1", ", ", norm(spin1))
+#     Plots.quiver(x, y, z, quiver= (u,v,w), camera=(45, round(atand(1 / √2))), xlims = (0, 1.5), ylims = (0, 1.5), zlims = (0, 1.5))
+# end
+
+S = chain_1D(10)
+
 @gif for i in 1:500
     Heun(S, J)
     x = vec([s.pos[1] for s in S])
@@ -31,13 +47,7 @@ S = [Magnet((0.5, 0.5, 0.5), [0.5, 0.5, 1/sqrt(2)])]#, Magnet((0.5, 0.7, 0.5), [
     u = vec([s.spin[1] for s in S]) 
     v = vec([s.spin[2] for s in S])
     w = vec([s.spin[3] for s in S])
-    # spin1 = S[1].spin
-    # println("$spin1", ", ", norm(spin1))
-    Plots.quiver(x, y, z, quiver= (u,v,w), camera=(45, round(atand(1 / √2))), xlims = (0, 1.5), ylims = (0, 1.5), zlims = (0, 1.5))
+    Plots.quiver(x, y, z, quiver= (u,v,w), xlims = (0, 11), ylims = (0, 1.5), zlims = (-1.5, 1.5))
+    xlabel!("x")
+    ylabel!("y")
 end
-
-
-
-
-
-
