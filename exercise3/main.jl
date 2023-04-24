@@ -1,6 +1,8 @@
-include("functions.jl")
-include("datatypes.jl")
-include("problems.jl")
+include("fractals.jl")
+include("lattice.jl")
+include("solvers.jl")
+include("plotting.jl")
+include("saving.jl")
 
 using LinearAlgebra, ForwardDiff
 using DataStructures
@@ -9,14 +11,15 @@ using CalculusWithJulia
 using Plots, Unitful
 using ProfileView
 using SparseArrays, Arpack
-using PlotlyJS
+using CSV, DataFrames
+using PlotlyJS; plotlyjs()
 
-plotlyjs()
+l = 3
+excited = 3
+
+eigvals, eigvecs, x_size = fivepoint_solver(l)
+save_eigs(eigvals, eigvecs, "test.CSV")
+# contourplot_3D(l, excited, eigvecs, x_size)
+#ninepoint_solver(3, 1)
 
 
-# ProfileView.@profview(problem4(1,1))
-# ProfileView.@profview(problem4(2,5))
-
-problem4(3,8)
-#problem7(3,9)
-#draw_fractal(1)
