@@ -26,3 +26,7 @@ function contourplot_3D(l::Int, excited::Int, eigvecs, x_size)
     #Plots.plot(x,eigvals)
 end
 
+function plot_curvefit(N::Array{Float64}, delta_N::Array{Float64}, a, b)
+    Plots.plot(sqrt.(N), delta_N)
+    Plots.plot!(sqrt.(N), [a*n^b for n in sqrt.(N)])
+end

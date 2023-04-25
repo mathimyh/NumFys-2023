@@ -4,8 +4,8 @@ function remove_zeros(matty)
     Removes every column and row that is zero in the matrix
 
     =#
-    indices1 = count(!=(0), matty, dims=1).>0
-    indices2 = count(!=(0), matty, dims=2).>0
+    indices1 = count(>(0), matty, dims=1).>0 # Has to be >(0) and not !=(0) to remove every row and column!!!!
+    indices2 = count(>(0), matty, dims=2).>0
 
     matty = matty[indices1[1,:], indices2[:,1]]
 
@@ -25,21 +25,22 @@ function add_back_zeros(eigvec, indices, size)
     return res
 end
 
-function fivepoint_solver(l::Int64)
+function fivepoint_solver(l::Int64, solutions::Int64)
     #=
 
     A solver which uses the normal five-point stencil approximation. The sparse matrix is here 
-    created by the use of 5 sparse arrars, each corresponding to one stencil. 
+    created by the use of 5 sparse arrays, each corresponding to one stencil, and thus one 
+    diagonal in the pentadiagonal matrix.  
 
     Returns:
         eigvals : The 10 smallest eigenvalues
         eigvecs : The eigenvectors corresponding to the eigenvalues
+        x_size : the original size of the grid
 
     =#
     lattice, x_size = make_lattice(l)
     delta = 1 / 4^l
 
-    # Define the 5 vectors that makes up the matrix
     a = zeros(x_size^2) # Middle diagonal  
     b = zeros(x_size^2-1) # Upper diagonal
     c = zeros(x_size^2-1)  # Lower diagonal
@@ -81,11 +82,12 @@ function fivepoint_solver(l::Int64)
     equation = spdiagm(-x_size => sparse(e), -1 => sparse(c), 0 => sparse(a), 1 => sparse(b), x_size => sparse(e))
 
     equation, indices = remove_zeros(equation)
-    eigvals, temps = eigs(equation, nev=10, which=:SM, tol=1e-1, maxiter=10000)
+    
+    eigvals, temps = eigs(equation, nev=solutions, which=:SM, tol=1e-2, maxiter=10000)
     
     eigvecs = []
 
-    for i in 1:10
+    for i in 1:solutions
         push!(eigvecs, add_back_zeros(temps[:,i], indices, x_size))
     end
 
@@ -94,6 +96,20 @@ end
 
 
 function ninepoint_solver(l::Int64)
+    #=
+
+    Solver using a nine-point stencil to approximate the Laplacian. So instead of only nearest neighbours,
+    also the next-nearest neighbours. 
+    Here the coordinates and values are put into separate arrays, then the matrix is constructed from these
+    using the sparse() function. 
+
+    Returns:
+        eigvals : The 10 smallest eigenvalues
+        eigvecs : The eigenvectors corresponding to the eigenvalues
+        x_size : the original size of the grid
+
+    =#
+
     lattice, x_size = make_lattice(l)
     delta = 1 / 4^l
 
@@ -108,9 +124,9 @@ function ninepoint_solver(l::Int64)
 
     for i in 1:x_size
         for j in 1:x_size
-            if lattice[i,j] == inside::GridPoint # Only add when you are at an inside point
+            if lattice[i,j] == inside::GridPoint 
                 for k in 1:2
-                        for bord in bords # Now all 8 points around it
+                        for bord in bords 
                             if lattice[i+k*bord[1],i+k*bord[2]] == inside::GridPoint
                                 push!(x, indexer + bord[1] + x_size*bord[2])
                                 push!(y, indexer)

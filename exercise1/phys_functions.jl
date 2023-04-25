@@ -1,5 +1,3 @@
-### HERE ALL PHYSICAL FUNCTIONS ARE DEFINED ###
-
 ## First define functions for wall collisions
 vert_wall(disc) = [-ksi*disc.vel[1], ksi*disc.vel[2]]
 hori_wall(disc) = [ksi*disc.vel[1], -ksi*disc.vel[2]]

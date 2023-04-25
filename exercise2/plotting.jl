@@ -1,17 +1,27 @@
-## EXAMPLE ##
-# ϕs = range(-π, π, length = 50)
-# θs = range(0, π, length = 25)
-# θqs = range(1, π - 1, length = 25)
-# x = vec([sin(θ) * cos(ϕ) for (ϕ, θ) = Iterators.product(ϕs, θs)])
-# y = vec([sin(θ) * sin(ϕ) for (ϕ, θ) = Iterators.product(ϕs, θs)])
-# z = vec([cos(θ) for (ϕ, θ) = Iterators.product(ϕs, θs)])
-# @gif for i in 1:0.1:6*pi
-# u = 0.1 * vec([sin(i+pi/2) * cos(i) for (ϕ, θ) = Iterators.product(ϕs, θqs)])
-# v = 0.1 * vec([cos(i) * sin(i+pi/2) for (ϕ, θ) = Iterators.product(ϕs, θqs)])
-# w = 0.1 * vec([cos(θ) for (ϕ, θ) = Iterators.product(ϕs, θqs)])
-# Plots.quiver(x, y, z, quiver = (u, v, w))
-# end
-##############
+
+function omega(j, dz, ka)
+    return 2*dz + 2*j*(1-cos(ka))
+end
+
+function plot_omega()
+    j = 10
+    dz = 3
+    xs = LinRange(0,π,100)
+    ys1 = omega.(j, dz, xs)
+    Plots.plot(xs,ys1)
+    j = 20
+    dz = 3
+    ys2 = omega.(j,dz,xs)
+    Plots.plot!(xs,ys2)
+    j = 10
+    dz = 6
+    ys3 = omega.(j,dz,xs)
+    Plots.plot!(xs,ys3)
+    Plots.savefig("exercise2/plots/w(ka).png")
+end
+    
+   
+
 
 
 

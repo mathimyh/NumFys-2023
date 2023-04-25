@@ -1,6 +1,3 @@
-## DEFINING A FUNCTION FOR EACH PROBLEM ######
-
-
 # Problem 1 takes in n number of discs and m number of collisions until end of simulation
 function problem1(n::Int64, m::Int64)
     p = make_subplots(rows = 1, cols = 2)

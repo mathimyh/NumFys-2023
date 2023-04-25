@@ -1,7 +1,7 @@
 # First defining the physical functions
 
 function ksi() 
-    return [randn(), randn(), randn()] .* sqrt(2*alfa*kbt / (gamma*mu*step_size)) 
+    return sqrt(2*alfa*kbt / (gamma*mu*step_size)) .* [randn(), randn(), randn()]   
 end
 
 function H_eff(J::Float64, S, index::Int64)
@@ -13,8 +13,9 @@ function H_eff(J::Float64, S, index::Int64)
     if index == length(S)
         after = 1
     end
-    derivative = -(J.*0.5) .* S[before].spin .- (J.*0.5) .* S[after].spin .- 2 .*d_z .*[0,0,S[index].spin[1]] .- mu_b .* [0,0,1] 
-    return derivative .+ ksi()
+    derivative = Vector{Float64}(undef,3)
+    @. derivative = -(J*0.5) * S[before].spin - (J*0.5) * S[after].spin - 2 *d_z *[0,0,S[index].spin[1]] - mu_b * [0,0,1] 
+    return -(1/mu) .* derivative .+ ksi()
 end
 
 function dS(H_eff::Vector{Float64}, S, index::Int64)
