@@ -81,7 +81,7 @@ function fivepoint_solver(l::Int64)
     equation = spdiagm(-x_size => sparse(e), -1 => sparse(c), 0 => sparse(a), 1 => sparse(b), x_size => sparse(e))
 
     equation, indices = remove_zeros(equation)
-    eigvals, temps = eigs(equation, nev=10, which=:SM, tol=1e-2, maxiter=10000)
+    eigvals, temps = eigs(equation, nev=10, which=:SM, tol=1e-1, maxiter=10000)
     
     eigvecs = []
 
