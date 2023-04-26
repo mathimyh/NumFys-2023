@@ -27,6 +27,81 @@ Finds every inside point by starting at the middle and searching in every direct
     return nothing
 end
     
+function search_queue(point, lattice)
+    
+    q = Queue{Tuple}()
+    enqueue!(q, point)
+
+    while !isempty(q)
+        point = dequeue!(q)
+        lattice[point[1], point[2]] = inside::GridPoint
+        right = (point[1]+1, point[2])
+        if lattice[right[1],right[2]] != border::GridPoint && lattice[right[1],right[2]] != inside::GridPoint && right[1] <= size(lattice,1)
+            if right ∉ q
+                enqueue!(q, right)
+            end
+        end
+        left = (point[1]-1, point[2])
+        if lattice[left[1],left[2]] != border::GridPoint && lattice[left[1],left[2]] != inside::GridPoint && left[1] > 0
+            if left ∉ q
+                enqueue!(q, left)
+            end
+        end
+        up = (point[1], point[2]+1)
+        if lattice[up[1],up[2]] != border::GridPoint && lattice[up[1],up[2]] != inside::GridPoint && up[2] <= size(lattice, 2)
+            if up ∉ q
+                enqueue!(q, up)
+            end
+        end
+        down = (point[1], point[2]-1)
+        if lattice[down[1],down[2]] != border::GridPoint && lattice[down[1],down[2]] != inside::GridPoint && up[2] > 0
+            if down ∉ q
+                enqueue!(q, down)
+            end
+        end
+    end
+end
+
+function search_set(point, lattice)
+    
+    q = Queue{Tuple}()
+    s = Set()
+    enqueue!(q, point)
+    push!(s, point)
+
+    while !isempty(q)
+        point = dequeue!(q)
+        lattice[point[1], point[2]] = inside::GridPoint
+        right = (point[1]+1, point[2])
+        if lattice[right[1],right[2]] != border::GridPoint && lattice[right[1],right[2]] != inside::GridPoint && right[1] <= size(lattice,1)
+            if right ∉ s
+                enqueue!(q, right)
+                push!(s, right)
+            end
+        end
+        left = (point[1]-1, point[2])
+        if lattice[left[1],left[2]] != border::GridPoint && lattice[left[1],left[2]] != inside::GridPoint && left[1] > 0
+            if left ∉ s
+                enqueue!(q, left)
+                push!(s, left)
+            end
+        end
+        up = (point[1], point[2]+1)
+        if lattice[up[1],up[2]] != border::GridPoint && lattice[up[1],up[2]] != inside::GridPoint && up[2] <= size(lattice, 2)
+            if up ∉ s
+                enqueue!(q, up)
+                push!(s, up)
+            end
+        end
+        down = (point[1], point[2]-1)
+        if lattice[down[1],down[2]] != border::GridPoint && lattice[down[1],down[2]] != inside::GridPoint && up[2] > 0
+            if down ∉ s
+                enqueue!(q, down)
+                push!(s, down)
+            end
+        end
+    end
+end
 
 function make_lattice(l::Int64)
 #= 
@@ -39,7 +114,7 @@ Constructs a lattice where every corner in the fractal for level l falls upon a 
     # Convert every point to ints for easier calculations later
     x = trunc.(Int64, 4^l .* [tuple[1] for tuple in fractal])
     y = trunc.(Int64, 4^l .* [tuple[2] for tuple in fractal])
-    borders = (tuple.(x,y))
+    borders = Set(tuple.(x,y))
 
     min_x = minimum(x)
     max_x = maximum(x)
@@ -66,7 +141,7 @@ Constructs a lattice where every corner in the fractal for level l falls upon a 
 
     # Set the inside points
     point0 = (ceil(Int64, x_size/2), ceil(Int64, y_size/2))
-    search(point0, lattice)
+    search_set(point0, lattice)
 
     # Set the outside points
     for i in 1:x_size

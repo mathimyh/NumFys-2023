@@ -25,7 +25,7 @@ function add_back_zeros(eigvec, indices, size)
     return res
 end
 
-function fivepoint_solver(l::Int64, solutions::Int64)
+function fivepoint_solver(l::Int64, solutions::Int64, return_eigvecs::Bool = true)
     #=
 
     A solver which uses the normal five-point stencil approximation. The sparse matrix is here 
@@ -83,16 +83,21 @@ function fivepoint_solver(l::Int64, solutions::Int64)
 
     equation, indices = remove_zeros(equation)
     
-    eigvals, temps = eigs(equation, nev=solutions, which=:SM, tol=1e-2, maxiter=10000)
-    
-    eigvecs = []
+    if return_eigvecs
+        eigvals, temps = eigs(equation, nev=solutions, which=:SM, tol=1e-2, maxiter=10000)
+        
+        eigvecs = []
 
-    for i in 1:solutions
-        push!(eigvecs, add_back_zeros(temps[:,i], indices, x_size))
+        for i in 1:solutions
+            push!(eigvecs, add_back_zeros(temps[:,i], indices, x_size))
+        end
+
+        return eigvals, eigvecs, x_size
+    else
+        eigvals = eigs(equation, nev=solutions, which=:SM, tol=1e-2, maxiter=10000, ritzvec=false)
+        return eigvals, x_size
     end
-
-    return eigvals, eigvecs, x_size
-end
+end 
 
 
 function ninepoint_solver(l::Int64)

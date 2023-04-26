@@ -1,0 +1,4 @@
+# Results
+## Running times
+Level 5 no midpoints: 421 sec = 7 min
+Level 4 no midpoints: 2.1 sec
