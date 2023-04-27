@@ -100,7 +100,7 @@ function fivepoint_solver(l::Int64, solutions::Int64, return_eigvecs::Bool = tru
 end 
 
 
-function ninepoint_solver(l::Int64)
+function ninepoint_solver(l::Int, solutions::Int)
     #=
 
     Solver using a nine-point stencil to approximate the Laplacian. So instead of only nearest neighbours,
@@ -109,9 +109,9 @@ function ninepoint_solver(l::Int64)
     using the sparse() function. 
 
     Returns:
-        eigvals : The 10 smallest eigenvalues
+        eigvals : The smallest eigenvalues, number given by arg solutions
         eigvecs : The eigenvectors corresponding to the eigenvalues
-        x_size : the original size of the grid
+        x_size : The original size of the grid
 
     =#
 
@@ -126,30 +126,27 @@ function ninepoint_solver(l::Int64)
     weights = [16, -1]
 
     indexer = 1
-
-    for i in 1:x_size
-        for j in 1:x_size
-            if lattice[i,j] == inside::GridPoint 
-                for k in 1:2
-                        for bord in bords 
-                            if lattice[i+k*bord[1],i+k*bord[2]] == inside::GridPoint
-                                push!(x, indexer + bord[1] + x_size*bord[2])
-                                push!(y, indexer)
-                                push!(val, weights[k] / (12*delta^2))
-                            end
-                        end 
-                    end
-                push!(x, indexer)
+    
+    for i in 1:x_size; for j in 1:x_size; if lattice[i,j] == inside::GridPoint #Iterating through all points, only looking at inside
+        for bord in bords; for k in 1:2 # Iterating through the 8 stencils around the point
+            if lattice[i+k*bord[1],j+k*bord[2]] == inside::GridPoint
+                push!(x, indexer + x_size*k*bord[1] + k*bord[2])
                 push!(y, indexer)
-                push!(val, -30 / (12*delta^2)) 
-            end; indexer += 1
-        end
-    end
+                push!(val, weights[k] / (12*delta^2))
+            end
+        end;end
+        
+        push!(x, indexer)
+        push!(y, indexer)
+        push!(val, -30 / (12*delta^2))
+        
+        end; indexer += 1
+    end; end
 
     equation = sparse(x,y,val, x_size^2,x_size^2)
 
     equation, indices = remove_zeros(equation)
-    eigvals, temps = eigs(equation, nev=10, which=:SM, tol=1e-2, maxiter=10000)
+    eigvals, temps = eigs(equation, nev=solutions, which=:LM, tol=1e-2, maxiter=10000)
     
     eigvecs = []
 
