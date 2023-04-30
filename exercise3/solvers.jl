@@ -123,34 +123,34 @@ function ninepoint_solver(l::Int, solutions::Int)
     val = Float64[]
 
     bords = [(1,0),(0,1),(-1,0),(0,-1)]
-    weights = [16, -1]
+    weights = [-270, 27, -2]
 
     indexer = 1
     
     for i in 1:x_size; for j in 1:x_size; if lattice[i,j] == inside::GridPoint #Iterating through all points, only looking at inside
-        for bord in bords; for k in 1:2 # Iterating through the 8 stencils around the point
+        for bord in bords; for k in 1:3 # Iterating through the 8 stencils around the point
             if lattice[i+k*bord[1],j+k*bord[2]] == inside::GridPoint
                 push!(x, indexer + x_size*k*bord[1] + k*bord[2])
                 push!(y, indexer)
-                push!(val, weights[k] / (12*delta^2))
+                push!(val, weights[k] / (180*delta^2))
             end
         end;end
         
         push!(x, indexer)
         push!(y, indexer)
-        push!(val, -30 / (12*delta^2))
-        
+        push!(val, 980 / (180*delta^2))
+
         end; indexer += 1
     end; end
 
     equation = sparse(x,y,val, x_size^2,x_size^2)
 
     equation, indices = remove_zeros(equation)
-    eigvals, temps = eigs(equation, nev=solutions, which=:LM, tol=1e-2, maxiter=10000)
+    eigvals, temps = eigs(equation, nev=solutions, which=:SM, tol=1e-2, maxiter=10000)
     
     eigvecs = []
 
-    for i in 1:10
+    for i in 1:solutions
         push!(eigvecs, add_back_zeros(temps[:,i], indices, x_size))
     end
 

@@ -5,7 +5,11 @@ function draw_fractal(l::Int64)
     Plots.plot(x,y)
 end
 
-function contourplot_3D(l::Int, excited::Int, eigvecs, x_size)
+function contourplot_3D(filename::String, l::Int, excited::Int)
+    eigvals = load(filename, "eigvals")
+    eigvecs = load(filename, "eigvecs")
+    x_size = load(filename, "x_size")
+    
     eigvec_grid = reshape(eigvecs[excited], (x_size, x_size))
 
     layout = Layout(

@@ -81,7 +81,7 @@ function search_set(point, lattice)
         end
         left = (point[1]-1, point[2])
         if lattice[left[1],left[2]] != border::GridPoint && lattice[left[1],left[2]] != inside::GridPoint && left[1] > 0
-            if left ∉ s
+            if left ∉ s 
                 enqueue!(q, left)
                 push!(s, left)
             end
