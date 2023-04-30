@@ -19,5 +19,5 @@ ksi = 1
 # ProfileView.@profview problem1(10)
 # ProfileView.@profview problem1(5000)
 
-@time problem2(10, 100)
-@time problem2(5000, 100000)
+# @time problem2(10, 100)
+# @time problem2(5000, 10000)

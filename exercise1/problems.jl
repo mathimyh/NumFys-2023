@@ -58,16 +58,16 @@ function problem2(n::Int64, m::Int64)
 end
 
 
-function problem3(n::Int64, m::Int64)
-    p = make_subplots(rows = 2, cols = 2)
+# function problem3(n::Int64, m::Int64)
+#     p = make_subplots(rows = 2, cols = 2)
     
-    radius = 1 / (2*n)
+#     radius = 1 / (2*n)
 
-    discs::Vector{Disc} = uniform_distribution(n, radius, true)
-    queue::PriorityQueue, clock::Clock = initialize_collisions(discs)
-    halfway::Int64 = n/2
+#     discs::Vector{Disc} = uniform_distribution(n, radius, true)
+#     queue::PriorityQueue, clock::Clock = initialize_collisions(discs)
+#     halfway::Int64 = n/2
 
-    for i in 1:m
-        update(queue, discs, clock)
-        if i % 100 == 0
+#     for i in 1:m
+#         update(queue, discs, clock)
+#         if i % 100 == 0
             

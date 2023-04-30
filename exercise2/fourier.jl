@@ -1,8 +1,8 @@
-function fourier_2D(length::Int)
+function fourier_2D(length::Int, filename::String)
     S = chain_groundstate(length)
     time = 0
     xs = []
-    while time < 30e-14
+    while time < 50e-12
         u = vec([s.spin[1] for s in S])
         push!(xs, u) 
         Heun!(S, J)
@@ -11,16 +11,14 @@ function fourier_2D(length::Int)
 
     M = hcat(xs...)
     
+
     # Apply 2D Fourier transform on the matrix
-    fft_result = fft(M)
+    fft_result = FFTW.fft(M, (1,2))
 
     # Get the frequencies in the time and space domain
     freq_time = fftfreq(size(M, 2))
     freq_space = fftfreq(size(M, 1))
 
-    # # Shift the result to center the low frequencies
-    # fft_result = fftshift(fft_result)
-
-    # Plot the Fourier transform
-    Plots.heatmap(freq_space, freq_time, abs.(fft_result), xlabel="Space", ylabel="Time", color=:viridis)
+    save(filename, "fft_result", fft_result, "freq_time", freq_time, "freq_space", freq_space)
+    return nothing
 end
