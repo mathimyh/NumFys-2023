@@ -1,1 +1,2 @@
 exercise3/cache/fivepoint_l5_10sols.jld filter=lfs diff=lfs merge=lfs -text
+exercise2/cache/fouriermatrix_50mags_2kbt.jld filter=lfs diff=lfs merge=lfs -text
