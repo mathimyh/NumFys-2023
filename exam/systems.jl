@@ -1,16 +1,8 @@
-# I made a new type which is a gridpoint. This is either a monomer (Acid) or an empty spot (EmptySpot)
-# This made it easier to access the different monomers in the grid.
-
-abstract type GridPoint end
-
-mutable struct Acid <: GridPoint
+mutable struct Acid
     pos::Tuple{Int, Int}
     type::Int
     cov_bond::Vector{Acid}
     nearest::Vector{Acid}
-end
-
-mutable struct EmptySpot <: GridPoint
 end
 
 # A logger is a struct containing information about the system at each MC sweep
@@ -23,22 +15,40 @@ function nearest_neighbours(this::Acid, acids::Vector{Acid})
     this.nearest = Vector{Acid}()
     bords = [(0,1),(1,0),(0,-1),(-1,0)] # Generalize!
     for bord in bords
-        temp = pos .+ bord
+        temp = this.pos .+ bord
         idx = findindex(temp, acids)
-        if temp ∈ occupied && temp ∉ this.cov_bond
+        if temp ∈ occupied && acids[idx] ∉ this.cov_bond
+            push!(this.nearest, acids[idx])
+        end
+    end
+end
+
+function nearest_neighbours(tup::Tuple{Int, Int}, acids::Vector{Acid})
+    this = acids[findindex(tup, acids)]
+    occupied = [acid.pos for acid in acids]
+    this.nearest = Vector{Acid}()
+    bords = [(0,1),(1,0),(0,-1),(-1,0)] # Generalize!
+    for bord in bords
+        temp = this.pos .+ bord
+        idx = findindex(temp, acids)
+        if temp ∈ occupied && acids[idx] ∉ this.cov_bond
             push!(this.nearest, acids[idx])
         end
     end
 end
 
 
-function folded_chain2D(len::Int, grid_size::Int)
+function folded_chain2D(len::Int)
 
-    grid = Array{GridPoint, 2}(undef, grid_size, grid_size)
-    for idx in CartesianIndices(grid); grid[idx] = EmptySpot(); end
+    #=
+
+    Initalizes a chain of monomers in a 2D grid. 
+    Returns the vector of these monomers where all elements are of type Acid
+    
+    =# 
+
     acids = Vector{Acid}()
-    start::Acid = Acid((rand(1:grid_size), rand(1:grid_size)), rand(1:20), Vector{Acid}(), Vector{Acid}())
-    grid[start.pos...] = start
+    start::Acid = Acid((len, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
     push!(acids, start)
 
     for i in 2:len 
@@ -71,50 +81,53 @@ function folded_chain2D(len::Int, grid_size::Int)
         #     acids[i-1].pos = acids[i-2].pos .+ rand(temp)
         # end; end
 
-
-        # Find a position thats not occupied
+        # Find a position thats not occupied'
+        bords = [(1,0),(0,1),(-1,0),(0,-1)]
         pos = acids[i-1].pos .+ rand(bords)
         tries = 0
-        while pos ∈ occupied || !all(1 < x < grid_size for x in pos)
+        while pos ∈ occupied
             pos = acids[i-1].pos .+ rand(bords)
             tries += 1
-            if tries > 4
-                return chain_2d(len, grid_size, folded)
+            if tries > 4 # Should maybe make a more sophisticated solution here. I just try again if its stuck
+                return chain_2d(len)
             end
         end
 
         # Add to the grid and vector
-        grid[pos...] = Acid(pos, rand(1:20), Vector{Acid}(), Vector{Acid}())
-        push!(acids, grid[pos...])
+        this = Acid(pos, rand(1:20), Vector{Acid}(), Vector{Acid}())
+        push!(acids, this)
 
         # Find the covalent bonds
-        push!(grid[pos...].cov_bond, acids[i-1])
-        push!(acids[i-1].cov_bond, grid[pos...])
+        push!(this.cov_bond, acids[i-1])
+        push!(acids[i-1].cov_bond, this)
         
         # Find the nearest neighbours
-        nearest_neighbours(grid[pos...], acids)
+        nearest_neighbours(this, acids)
     end
 
-    return grid, acids
+    return acids
 end
 
-function unfolded_chain2D(len::Int, gridsize::Int)
+function unfolded_chain2D(len::Int)
     
-    grid = Array{GridPoint, 2}(undef, gridsize, gridsize)
-    for idx in CartesianIndices(grid); grid[idx] = EmptySpot(); end
+    #=
+
+    Initalizes a straight chain of monomers on a 2D grid. Returns the vector of these. 
+    
+    =#
+
     acids = Vector{Acid}()
 
     for i in 1:len
-        new = Acid((trunc(Int,gridsize/3+i), trunc(Int, gridsize/2)), rand(1:20), Vector{Acid}(), Vector{Acid}())
-        push!(acids, new)
-        grid[new.pos...] = new
+        this = Acid((len+i, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
+        push!(acids, this)
         if i > 1
             push!(acids[i].cov_bond, acids[i-1])
             push!(acids[i-1].cov_bond, acids[i])
         end
     end
 
-    return grid, acids
+    return acids
 end
 
 
@@ -133,10 +146,10 @@ function calculate_energy(acids::Vector{Acid}, interaction_e)::Float64
     return energy * 0.5 # Account for double counting
 end
      
-function findindex(this::Acid, acids::Vector{Acid})::Int
+function findindex(this::Tuple{Int,Int}, acids::Vector{Acid})::Int
     idx = 0
     for i in eachindex(acids)
-        if acids[i].pos == this.pos
+        if acids[i].pos == this
             idx = i
         end
     end

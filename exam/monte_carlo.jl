@@ -31,7 +31,7 @@ function MMC_check(test::Acid, transition::Tuple{Int,Int}, acids::Vector{Acid}):
     end
 end
 
-function transition!(acids::Vector{Acid}, grid::Array{GridPoint})::Bool
+function transition!(acids::Vector{Acid})::Bool
     
     #=
     
@@ -53,10 +53,8 @@ function transition!(acids::Vector{Acid}, grid::Array{GridPoint})::Bool
         distances = ([abs.(temp .- cov) for cov in cov_pos])
         if temp ∉ occupied && all(sum(tup) <= 1 for tup in distances)  # Check if it is physically possible
             if MMC_check(test, temp, acids)  # Check if it is energetically favored 
-                grid[test.pos...] = EmptySpot()
                 test.pos = temp
-                grid[test.pos...] = test
-                nearest_neighbours(test.pos, [acid.pos for acid in acids], grid) # Update this!!!
+                nearest_neighbours(test.pos, acids) # Update this!!!
                 return true
             end
         end
@@ -64,10 +62,10 @@ function transition!(acids::Vector{Acid}, grid::Array{GridPoint})::Bool
     return false
 end
 
-function MC_sweep!(acids::Vector{Acid}, grid::Array{GridPoint})::Nothing
+function MC_sweep!(acids::Vector{Acid})::Nothing
     N = length(acids)
     for i in 1:N
-        if !transition!(acids, grid)
+        if !transition!(acids)
             i -= 1
         end
     end
