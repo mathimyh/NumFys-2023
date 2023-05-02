@@ -19,16 +19,14 @@ using PlotlyJS; #plotlyjs()
 
 l = 4
 solutions = 10
-excited = 7
+excited = 5
 
 # eigvals, eigvecs, x_size = ninepoint_solver(l, solutions)
 # save_eigs(eigvals, eigvecs, x_size, "exercise3/cache/thirteenpoint_l4_10sols_test.jld")
-# eigvecs = load("exercise3/cache/ninepoint_l3_10sols_negativelaplacian.jld", "eigvecs")
-# eigvals = load("exercise3/cache/ninepoint_l3_10sols_negativelaplacian.jld", "eigvals")
-# eigvals2 = load("exercise3/cache/fivepoint_l5_10sols.jld", "eigvals")
-# println(eigvals, eigvals2)
-# x_size = load("exercise3/cache/ninepoint_l3_10sols_negativelaplacian.jld", "x_size")
-# contourplot_3D("exercise3/cache/thirteenpoint_l4_10sols_test.jld",l, excited)
+# eigvecs = load("exercise3/cache/fivepoint_l5_10sols.jld", "eigvecs")
+# eigvals = load("exercise3/cache/fivepoint_l5_10sols.jld", "eigvals")
+# x_size = load("exercise3/cache/fivepoint_l5_10sols.jld.jld", "x_size")
+contourplot_3D("exercise3/cache/fivepoint_l5_10sols.jld",l, excited)
 #ninepoint_solver(3, 1)
 
 
@@ -49,9 +47,10 @@ excited = 7
 # @ProfileView.profview(ninepoint_solver(l, solutions))
 
 #save("exercise3/cache/fivepoint_l4_10eigvals.jld", "eigvals", eigvals)
-# eigvals = load("exercise3/cache/fivepoint_l4_10eigvals.jld", "eigvals")
+eigvals = load("exercise3/cache/fivepoint_l4_10eigvals.jld", "eigvals")
 
 
-# delta_N = find_delta_N(l,eigvals[1])
-# a,b = curve_fitting(eigvals[1], delta_N)
-# plot_curvefit(eigvals[1], delta_N, a, b, "exercise3/plots/fivepoint_l4_1000eigvals.pdf")
+delta_N = find_delta_N(l,eigvals[1])
+a,b = curve_fitting(eigvals[1], delta_N)
+println("a = $a, b = $b")
+plot_curvefit(eigvals[1], delta_N, a, b, "exercise3/plots/testyboi.pdf")

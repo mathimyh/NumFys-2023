@@ -1,0 +1,3 @@
+# Parameters used
+- For the phase diagrams, alfa = 0.1 and 0 magnetic field was used. d_z = 0.3 was used.
+- alfa 0.1 for fourier as well

@@ -33,9 +33,7 @@ function H_eff(J::Float64, S::AbstractArray{Magnet}, index::Tuple)
 
     derivative = Vector{Float64}(undef,3)
     @. derivative = -(J*0.5) * neighbours_spin - 2 *d_z *[0,0,S[index...].spin[3]] - mu_b * [0,0,1] 
-    # derivative = -(J*0.5) .* sum([S[neighbour...].spin for neighbour in neighbours]) .- 2 *d_z .*[0,0,S[index...].spin[1]] .- mu_b * [0,0,1]
-    ksssi = ksi()
-    return -(1/mu) .* derivative .+ ksssi
+    return -(1/mu) .* derivative .+ ksi()
 end
 
 function dS(H_eff::Vector{Float64}, S::AbstractArray{Magnet}, index::Tuple)
@@ -47,7 +45,7 @@ end
 # end
 
 function Heun!(S::AbstractArray{Magnet}, J::Float64)
-    S1 = deepcopy(S)
+    #S1 = deepcopy(S)
     
     f = similar(S, Vector{Float64})
     for idx in CartesianIndices(S)

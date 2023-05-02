@@ -1,8 +1,14 @@
-function fourier_2D(length::Int, filename::String)
-    S = chain_groundstate(length)
+function fourier_2D(length::Int, filename::String, FM::Bool = true)
+    
+    if FM
+        S = chain_groundstate_FM(length)
+    else
+        S = chain_groundstate_AFM(length)
+    end
+
     time = 0
     xs = []
-    while time < 50e-12
+    while time < 30e-12
         u = vec([s.spin[1] for s in S])
         push!(xs, u) 
         Heun!(S, J)
