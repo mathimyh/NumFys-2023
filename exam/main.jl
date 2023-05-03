@@ -1,7 +1,7 @@
 include("systems.jl")
 include("monte_carlo.jl")
 include("plotting.jl")
-
+include("tasks.jl")
 
 using Random
 using Distributions
@@ -14,7 +14,7 @@ T::Float64 = 10
 interact_e = interaction_energies()
 logger = Logger(Vector{Float64}())
 
-
+t2_1_6()
 
 
 

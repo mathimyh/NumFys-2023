@@ -60,14 +60,12 @@ function simulate_groundstate(filename::String, steps::Int, N_x::Int = 20, N_y::
     Ms = Vector{Float64}(undef, steps+1)
     ts = Vector{Float64}(undef, steps+1)
     t = 0
-    push!(Ms, magnetization(S))
-    push!(ts, t)
     
     for i in eachindex(Ms)
-        Heun!(S, J)
-        t += step_size
         Ms[i] = magnetization(S)
         ts[i] = t
+        Heun!(S, J)
+        t += step_size
     end
     
     save(filename, "Ms", Ms, "ts", ts)

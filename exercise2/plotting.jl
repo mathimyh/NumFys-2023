@@ -39,7 +39,7 @@ end
 
 
 function plot_Ms()
-    for i in 0.2:0.2:2
+    for i in 0.1:0.2:1.9
         filename = "exercise2/cache/magnetization_20x20x20_" * string(i)[1] * string(i)[3] * "T_10000steps.jld"
         pngname = "exercise2/plots/magnetization_20x20x20_" * string(i)[1] * string(i)[3] * "T_10000steps.png"
         Ms = load(filename, "Ms")

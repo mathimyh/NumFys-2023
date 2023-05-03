@@ -25,3 +25,16 @@ function plot_some_energies()
         Plots.savefig(filename)
     end
 end
+
+function animations!!()
+    acids = unfolded_chain2D(15)
+
+    anim = @animate for i in 1:100
+        MC_sweep!(acids)
+        plot2D(acids, calculate_energy(acids, interact_e))
+        Plots.xlims!(10, 30)
+        Plots.ylims!(10, 25)
+    end
+
+    gif(anim, "exam/gifs/sussyboy.gif", fps=2)
+end

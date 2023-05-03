@@ -10,5 +10,8 @@ function plot2D(acids::Vector{Acid}, energy::Float64)
     # Plots.xlims!(0, gridsize[1])
     # Plots.ylims!(0, gridsize[2])
     annotation = "Energy = " * string(round.(energy/(kb*T), digits=3)) * " kb"
-    Plots.annotate!(minimum(acid.pos[1] for acid in acids)+2, maximum(acid.pos[2] for acid in acids)-1, annotation)
+    # Plots.annotate!(minimum(acid.pos[1] for acid in acids)+2, maximum(acid.pos[2] for acid in acids)-1, annotation)
 end
+
+
+
