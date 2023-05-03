@@ -10,33 +10,6 @@ mutable struct Logger
     energies::Vector{Float64}
 end
 
-function nearest_neighbours(this::Acid, acids::Vector{Acid})
-    occupied = [acid.pos for acid in acids]
-    this.nearest = Vector{Acid}()
-    bords = [(0,1),(1,0),(0,-1),(-1,0)] # Generalize!
-    for bord in bords
-        temp = this.pos .+ bord
-        idx = findindex(temp, acids)
-        if temp ∈ occupied && acids[idx] ∉ this.cov_bond
-            push!(this.nearest, acids[idx])
-        end
-    end
-end
-
-function nearest_neighbours(tup::Tuple{Int, Int}, acids::Vector{Acid})
-    this = acids[findindex(tup, acids)]
-    occupied = [acid.pos for acid in acids]
-    this.nearest = Vector{Acid}()
-    bords = [(0,1),(1,0),(0,-1),(-1,0)] # Generalize!
-    for bord in bords
-        temp = this.pos .+ bord
-        idx = findindex(temp, acids)
-        if temp ∈ occupied && acids[idx] ∉ this.cov_bond
-            push!(this.nearest, acids[idx])
-        end
-    end
-end
-
 
 function folded_chain2D(len::Int)
 
@@ -55,32 +28,6 @@ function folded_chain2D(len::Int)
         
         occupied = [acid.pos for acid in acids]
 
-        # There is a possibility that all ways to go are occupied, can only happen after the 7th acid
-        # This tracks back and finds a new route
-        
-        #   A -> A -> A             A -> A -> A             A -> A -> A
-        #   ^         |             ^         |             ^         |
-        #   S    E    A     ---->   S         A     OR      S         A 
-        #        ^    |                       |                       |
-        #        A <- A                  A <- A             E <- A <- A
-        #                                |
-        #                                E 
-
-        # if i > 2; if all([acids[i-1].pos .+ bord for bord in bords] ∈ occupied)
-        #     last_step = acids[i-2].pos .- acids[i-1].pos
-        #     lastlast_step = acids[i-2].pos .- acids[i-2].pos 
-        #     temp = bords
-        #     delete!(temp, last_step)
-        #     delete!(temp, lastlast_step)
-            
-        #     # If it is totally stuck its just easier to start over
-        #     if (acids[i-2].pos .+ temp[1] ∈ occupied) && (acids[i-2].pos .+ temp[2] ∈ occupied)
-        #         return chain_2d(len, grid_size, folded)
-        #     end
-
-        #     acids[i-1].pos = acids[i-2].pos .+ rand(temp)
-        # end; end
-
         # Find a position thats not occupied'
         bords = [(1,0),(0,1),(-1,0),(0,-1)]
         pos = acids[i-1].pos .+ rand(bords)
@@ -93,7 +40,7 @@ function folded_chain2D(len::Int)
             end
         end
 
-        # Add to the grid and vector
+        # Make a new monomer and add to the vector
         this = Acid(pos, rand(1:20), Vector{Acid}(), Vector{Acid}())
         push!(acids, this)
 
@@ -131,29 +78,6 @@ function unfolded_chain2D(len::Int)
 end
 
 
-function interaction_energies()
-    interaction_matrix = Symmetric(rand(Uniform(-4*kb,-2*kb), 20,20))
-    return interaction_matrix
-end
 
-function calculate_energy(acids::Vector{Acid}, interaction_e)::Float64
-    energy::Float64 = 0
-    for acid in acids
-        for near in acid.nearest
-            energy += interaction_e[acid.type, near.type]
-        end
-    end
-    return energy * 0.5 # Account for double counting
-end
-     
-function findindex(this::Tuple{Int,Int}, acids::Vector{Acid})::Int
-    idx = 0
-    for i in eachindex(acids)
-        if acids[i].pos == this
-            idx = i
-        end
-    end
-    return idx
-end
         
         

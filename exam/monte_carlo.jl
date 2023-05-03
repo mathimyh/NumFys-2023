@@ -1,4 +1,4 @@
-function MMC_check(test::Acid, transition::Tuple{Int,Int}, acids::Vector{Acid})::Bool
+function MMC_check(test::Acid, transition::Tuple{Int,Int}, acids::Vector{Acid}, T::Float64)
     
     #=
 
@@ -7,31 +7,32 @@ function MMC_check(test::Acid, transition::Tuple{Int,Int}, acids::Vector{Acid}):
     
     =#
 
-    curr_e = calculate_energy(acids, interact_e)
-    new_acids = deepcopy(acids) # Make a copy, make the transition, and check energy for that one, compare the two
-    idx = 0
-    for i in eachindex(acids)
-        if acids[i] == test
-            idx = i
-        end
+    curr_e = calculate_energy(acids, interact_e) # Make a copy, make the transition, and check energy for that one, compare the two
+    old_pos = test.pos
+    test.pos = transition
+    for acid in acids
+        nearest_neighbours(acid, acids)
     end
-    new_acids[idx].pos = transition
-    new_e = calculate_energy(new_acids, interact_e)
+    new_e = calculate_energy(acids, interact_e)
     delta_e = new_e - curr_e
     if delta_e < 0
-        return true
+        return nothing
     else
         numba = rand()
-        boltzmann_factor = exp(-delta_e/(kb*T))
+        boltzmann_factor = exp(-delta_e/(T))
         if numba < boltzmann_factor
-            return true
+            return nothing
         else
-            return false
+            test.pos = old_pos
+            for acid in acids
+                nearest_neighbours(acid, acids)
+            end
+            return nothing
         end
     end
 end
 
-function transition!(acids::Vector{Acid})::Bool
+function transition!(acids::Vector{Acid}, T::Float64)
     
     #=
     
@@ -52,26 +53,21 @@ function transition!(acids::Vector{Acid})::Bool
         temp = test.pos .+ bord
         distances = ([abs.(temp .- cov) for cov in cov_pos])
         if temp ∉ occupied && all(sum(tup) <= 1 for tup in distances)  # Check if it is physically possible
-            if MMC_check(test, temp, acids)  # Check if it is energetically favored 
-                test.pos = temp
-                nearest_neighbours(test.pos, acids) # Update this!!!
-                return true
-            end
+            MMC_check(test, temp, acids, T)  # Check if it is energetically favored 
         end
     end
-    return false
 end
 
-function MC_sweep!(acids::Vector{Acid})::Nothing
+function MC_sweep!(acids::Vector{Acid}, T::Float64)::Nothing
+    #=
+
+    Performs a transition N times. If transition didnt happen, it does not count as one of the N'S
+
+    =#
+    
     N = length(acids)
     for i in 1:N
-        if !transition!(acids)
-            i -= 1
-        end
+        transition!(acids, T::Float64)
     end
-    push!(logger.energies, calculate_energy(acids, interact_e))
     return nothing
 end
-    
-
-    
