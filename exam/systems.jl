@@ -1,11 +1,9 @@
 mutable struct Acid
     pos::Tuple
     type::Int
-    cov_bond::Vector{Acid}
-    nearest::Vector{Acid}
 end
 
-# A logger is a struct containing information about the system at each MC sweep
+# A logger is a struct containing information about the system at each MC sweep (IS this necessary?)
 mutable struct Logger
     energies::Vector{Float64}
 end
@@ -21,7 +19,7 @@ function folded_chain2D(len::Int)
     =# 
 
     acids = Vector{Acid}()
-    start::Acid = Acid((len, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
+    start::Acid = Acid((len, len), rand(1:20))
     push!(acids, start)
 
     for i in 2:len 
@@ -41,15 +39,9 @@ function folded_chain2D(len::Int)
         end
 
         # Make a new monomer and add to the vector
-        this = Acid(pos, rand(1:20), Vector{Acid}(), Vector{Acid}())
+        this = Acid(pos, rand(1:20))
         push!(acids, this)
 
-        # Find the covalent bonds
-        push!(this.cov_bond, acids[i-1])
-        push!(acids[i-1].cov_bond, this)
-        
-        # Find the nearest neighbours
-        nearest_neighbours(this, acids)
     end
 
     return acids
@@ -66,16 +58,13 @@ function unfolded_chain2D(len::Int)
     acids = Vector{Acid}()
 
     for i in 1:len
-        this = Acid((len+i, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
+        this = Acid((len+i, len), rand(1:20))
         push!(acids, this)
-        if i > 1
-            push!(acids[i].cov_bond, acids[i-1])
-            push!(acids[i-1].cov_bond, acids[i])
-        end
     end
 
     return acids
 end
+
 
 function unfolded_chain3D(len::Int)
 #=
@@ -87,12 +76,8 @@ function unfolded_chain3D(len::Int)
     acids = Vector{Acid}()
 
     for i in 1:len
-        this = Acid((len+i, len, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
+        this = Acid((len+i, len, len), rand(1:20))
         push!(acids, this)
-        if i > 1
-            push!(acids[i].cov_bond, acids[i-1])
-            push!(acids[i-1].cov_bond, acids[i])
-        end
     end
 
     return acids

@@ -399,7 +399,7 @@ function t2_2_3a(len::Int, steps::Int, save_n_plot::Bool = true)
 
     Ts::Vector{Float64} = [i for i in 0.1:0.1:10]
     base_acids = unfolded_chain3D(len) # Use the same primary structure for each T
-
+    dims::Int = 3
 
     for T in Ts
         
@@ -409,13 +409,14 @@ function t2_2_3a(len::Int, steps::Int, save_n_plot::Bool = true)
         energies = []
         radii_gyr = []
 
-        push!(energies, calculate_energy(acids, interact_e))
+        curr_e = 0.0
+        push!(energies, curr_e)
         push!(radii_gyr, RoG3D(acids))
 
         # Simulate 
         for j in 1:steps
-            MC_sweep3D!(acids, T)
-            push!(energies, calculate_energy(acids, interact_e))
+            curr_e = MC_sweep!(acids, T, curr_e)
+            push!(energies, calculate_energy(acids, interact_e, dims))
             push!(radii_gyr, RoG3D(acids))
         end
 

@@ -26,9 +26,12 @@ global interact_e = interaction_energies()
 # @time t2_1_7a(5,10, false)
 # @time t2_1_7a(15,2000, false)
 
-@time t2_2_3a(1,10, false)
-@time t2_2_3a(50, 2000)
+ProfileView.@profview t2_2_3a(1,10, false)
+ProfileView.@profview t2_2_3a(15, 100, false)
 
 # ProfileView.@profview(t2_2_3a(5, 10, false))
 # ProfileView.@profview(t2_2_3a(15, 500, false))
+
+
+
 
