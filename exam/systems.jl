@@ -1,5 +1,5 @@
 mutable struct Acid
-    pos::Tuple{Int, Int}
+    pos::Tuple
     type::Int
     cov_bond::Vector{Acid}
     nearest::Vector{Acid}
@@ -67,6 +67,27 @@ function unfolded_chain2D(len::Int)
 
     for i in 1:len
         this = Acid((len+i, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
+        push!(acids, this)
+        if i > 1
+            push!(acids[i].cov_bond, acids[i-1])
+            push!(acids[i-1].cov_bond, acids[i])
+        end
+    end
+
+    return acids
+end
+
+function unfolded_chain3D(len::Int)
+#=
+
+    Initalizes a straight chain of monomers on a 3D grid. Returns the vector of these. 
+    
+    =#
+
+    acids = Vector{Acid}()
+
+    for i in 1:len
+        this = Acid((len+i, len, len), rand(1:20), Vector{Acid}(), Vector{Acid}())
         push!(acids, this)
         if i > 1
             push!(acids[i].cov_bond, acids[i-1])

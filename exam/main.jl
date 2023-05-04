@@ -16,13 +16,19 @@ using Plots; gr()
 const kb = 1.380649e-23 # m^2 kg s^-2 K^-1
 global interact_e = interaction_energies()
 
+
+# actually_t2_1_9(interact_e)
+
+
 # ProfileView.@profview(t2_1_7a(5, 10, false))
 # ProfileView.@profview(t2_1_7a(15, 1000, false))
 
-# @time t2_1_7a(5,10)
-# @time t2_1_7a(15,1000)
+# @time t2_1_7a(5,10, false)
+# @time t2_1_7a(15,2000, false)
 
-# t2_1_7a(15, 2000)
-t2_1_7b(15, 2000)
+@time t2_2_3a(1,10, false)
+@time t2_2_3a(50, 2000)
 
+# ProfileView.@profview(t2_2_3a(5, 10, false))
+# ProfileView.@profview(t2_2_3a(15, 500, false))
 
