@@ -116,7 +116,7 @@ end
 function t2_1_7a(len::Int, steps::Int, save_n_plot::Bool = true)
 
 
-    Ts::Vector{Float64} = [i for i in 0.01:0.01:10]
+    Ts::Vector{Float64} = [i for i in 4.57:0.01:10]
     base_acids = unfolded_chain2D(len) # Use the same primary structure for each T
 
 

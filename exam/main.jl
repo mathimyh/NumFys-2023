@@ -43,6 +43,4 @@ color_dict = Dict(i => rand(RGB) for i in 1:20)
 # ProfileView.@profview(t2_2_3a(5, 10, false))
 # ProfileView.@profview(t2_2_3a(15, 500, false))
 
-for N in (15,50,100)
-    t2_1_7a(N, 2000, true)
-end
+t2_1_7a(100, 2000, true)
