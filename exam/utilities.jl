@@ -1,7 +1,21 @@
 
 function interaction_energies()
+    #=
+
+    Make a symmetric matrix using Symmetric from the LinearAlgebra package
+    It is not possible to change the elements in this, however, so a regular matrix
+    is initalized and set to be completely identical. 
+    This regular matrix is returned. 
+
+    =#
+    
     interaction_matrix = Symmetric(rand(Uniform(-4,-2), 20,20))
-    return interaction_matrix
+    interact_e = Matrix{Float64}(undef, size(interaction_matrix)...)
+    for idx in CartesianIndices(interaction_matrix)
+        interact_e[idx] = interaction_matrix[idx]
+    end
+    
+    return interact_e
 end
 
 function calculate_energy(acids::Vector{Acid}, interaction_e, dims::Int)::Float64
@@ -44,7 +58,12 @@ function calculate_energy(acids::Vector{Acid}, interaction_e, dims::Int)::Float6
         
         for bord in bords    
             # Checks a position, is there a monomer there?
-            temp = this.pos .+ bord
+            temp = ()
+            if dims == 2
+                temp = (this.pos[1] + bord[1], this.pos[2] + bord[2])
+            else
+                temp = (this.pos[1] + bord[1], this.pos[2] + bord[2],this.pos[3]+bord[3])
+            end
             temp_idx = findindex(temp, acids)
             
             # If temp_idx is zero no monomer was found at the position

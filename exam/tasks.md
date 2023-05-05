@@ -32,3 +32,9 @@ At the end of the chain, if it is straight like in the unfolded state, it can mo
 As before, an internal monomer can really only move in one direction, since the lattice points in which they have to lie are part of a simple cubic lattice. So they can only flip in a 2D plane, as before. 
 
 ## 2.2
+
+
+
+
+Småge: 10076
+Green: 10069
