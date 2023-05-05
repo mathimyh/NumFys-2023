@@ -7,24 +7,27 @@ function plot2D(acids::Vector{Acid}, energy::Float64)
         push!(y, acid.pos[2])
     end
     tittel = "E = " * string(round.(energy, digits=3)) * " kb"
-    p = Plots.plot(x,y, aspect_ratio=1, title = tittel, c=:black)
+    p = Plots.plot(x,y, aspect_ratio=1, title = tittel, c=:black, legend = false)
     Plots.scatter!(p,x,y, color=colors, markersize=10)
     return p
 end
 
 function plot2D(acids::Vector{Acid})
+    colors = [color_dict[acid.type] for acid in acids]
     x = []
     y = []
     for acid in acids
         push!(x, acid.pos[1])
         push!(y, acid.pos[2])
     end
-    p = Plots.scatter(x,y)
-    Plots.plot!(p, x,y, aspect_ratio=1)
+    p = Plots.plot(x,y, aspect_ratio=1, legend = false, c=:black)
+    Plots.scatter!(p, x,y, color=colors)
+    return p
 end
 
 
 function plot3D(acids::Vector{Acid})
+    colors = [color_dict[acid.type] for acid in acids]
     xs = []
     ys = []
     zs = []
@@ -45,8 +48,9 @@ function plot3D(acids::Vector{Acid})
     p = Plots.plot(; xlabel="x",ylabel="y",zlabel="z", aspect_ratio=:equal, grid=:true)
     Plots.plot!(xlims=(xm-d,xm+d), ylims=(ym-d,ym+d), zlims=(zm-d,zm+d))
     Plots.plot!(;camera=(45,30))    #(azimuth,elevation) ???
-    Plots.scatter!(xs,ys,zs, legend=false)
     Plots.plot!(xs,ys,zs, legend=false)
+    Plots.scatter!(xs,ys,zs, legend=false, color=colors)
+    return p
 end
 
 function plot_interact_e(interact_e)
