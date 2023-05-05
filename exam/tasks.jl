@@ -255,7 +255,7 @@ function t2_1_8a(number::Int, steps::Int, structs::Bool = false)
     Plots.savefig(savename)
 end
 
-function t2_1_8(acids::Vector{Acid}, pos_idx::Dict{Tuple,Int}, number::Int, steps::Int, annealing::Bool = false, structs::Bool = false)
+function t2_1_8(acids::Vector{Acid}, number::Int, steps::Int, annealing::Bool = false, structs::Bool = false)
     
     stepsize = 4.0 / steps
         
@@ -279,7 +279,7 @@ function t2_1_8(acids::Vector{Acid}, pos_idx::Dict{Tuple,Int}, number::Int, step
     push!(radii_gyr, RoG(acids))
 
     for i in 1:steps
-        energy, pos_idx = MC_sweep!(acids, pos_idx, T, energy)
+        energy = MC_sweep!(acids, T, energy)
         push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
@@ -311,14 +311,14 @@ function t2_1_8(acids::Vector{Acid}, pos_idx::Dict{Tuple,Int}, number::Int, step
 end
 
 function actually_t2_1_8()
-    acids, pos_idx = unfolded_chain2D(30)
+    acids = unfolded_chain2D(30)
     for i in 1:5
         temp_acids = deepcopy(acids)
         SA::Bool = false
         if i > 3
             SA = true
         end
-        t2_1_8(temp_acids, pos_idx, i, 10000, SA, true)
+        t2_1_8(temp_acids, i, 10000, SA, true)
     end
 end
 
@@ -339,22 +339,23 @@ function t2_1_9(acids::Vector{Acid}, number::Int, steps::Int, annealing::Bool = 
     energies = []
     end_to_end = []
     radii_gyr = []
+    energy = 0.0
 
-    push!(energies, calculate_energy(acids, interact_e))
+    push!(energies, energy)
     temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
     push!(end_to_end, sqrt(sum(temp.^2)))
     push!(radii_gyr, RoG(acids))
 
     for i in 1:steps
-        MC_sweep!(acids, T)
-        push!(energies, calculate_energy(acids, interact_e))
+        energy = MC_sweep!(acids, T, energy)
+        push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
 
         if structs
             if i > 9000 && i % 100 == 0 # I found out 10k steps was good, so i just set this manually.
-                plot2D(acids)
+                plot2D_2_1_9(acids)
                 filename = "exam/plots/2_1_9/"*  string(number) * "/" * annealing_naming * "struct_" * string(i) * "sweeps.png"
                 savefig(filename)
             end
@@ -380,15 +381,19 @@ end
 function actually_t2_1_9(interact_e)
     acids = unfolded_chain2D(50)
 
-    for i in 1:20 # I think changing 20 of them should be good, considering they are all in the polymer
-        first = rand(acids)
-        second = rand(acids)
-        interact_e[first.type, second.type] = - interact_e[first.type, second.type]
+    for i in 1:5 # I think changing 5 of them should be good, considering they are all in the polymer
+        first, second = rand(1:20), rand(1:20)
+        if interact_e[first, second] < 0
+            interact_e[first, second] *= -1
+            interact_e[second, first] *= -1
+        end
     end
     
-    save("exam/cache/2_1_9/inter_matrix.jld", "interact_e", interact_e)
+    plot_interact_e(interact_e, "exam/plots/2_1_9/interact_e.png")
 
-    for i in 1:3
+    save("exam/cache/2_1_9/interact_e.jld", "interact_e", interact_e)
+
+    for i in 1:1
         temp_acids = deepcopy(acids)
         t2_1_9(temp_acids, i, 10000, true, true)
     end
@@ -398,22 +403,25 @@ function t2_2_2()
 
     acids = unfolded_chain3D(15)
     T::Float64 = 10.0
+    energy = 0.0
+    ps = []
 
     for i in 1:100
-        MC_sweep3D!(acids, T)
+        energy = MC_sweep!(acids, T, energy)
         if i == 1
-            plot3D(acids)
-            Plots.savefig("exam/plots/2_2_2/1sweep.png")
+            push!(ps, plot3D(acids))
         end
         if i == 10
-            plot3D(acids)
-            Plots.savefig("exam/plots/2_2_2/10sweep.png")
+            push!(ps, plot3D(acids))
         end
         if i == 100
-            plot3D(acids)
-            Plots.savefig("exam/plots/2_2_2/100sweep.png")
+            push!(ps, plot3D(acids))
         end
+
     end
+
+    Plots.plot(ps..., layout = (1,3), dpi=300, size = (1500, 600))
+    Plots.savefig("exam/plots/2_2_2/subplots.png")
 
 end
 

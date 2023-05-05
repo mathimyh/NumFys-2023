@@ -85,15 +85,13 @@ function unfolded_chain3D(len::Int)
     =#
 
     acids = Vector{Acid}()
-    pos_idx = Dict{Tuple, Int}()
 
     for i in 1:len
         this = Acid((len+i, len, len), rand(1:20))
         push!(acids, this)
-        pos_idx[(len+i, len, len)] = i
     end
 
-    return acids, pos_idx
+    return acids
 end
 
 
