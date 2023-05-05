@@ -25,6 +25,31 @@ function plot2D(acids::Vector{Acid})
     return p
 end
 
+function plot2D_2_1_9(acids::Vector{Acid})
+    # Now I want to plot every acid as black, but the acids that have positive interactions with 
+    # pairwise colors so it's easy to see on the plot which acids dont like each other!
+    color_dict = Dict(i => "black" for i in 1:20)
+
+    positive_pairs = [(i, j) for i in 1:20 for j in i+1:20 if interact_e[i, j] > 0]
+    colors_pairs = ["red", "green", "blue", "orange", "purple", "yellow"]
+    for (k, (i, j)) in enumerate(positive_pairs)
+        color_dict[i] = colors_pairs[k % length(colors_pairs) + 1]
+        color_dict[j] = colors_pairs[k % length(colors_pairs) + 1]
+    end
+
+    colors = [get(color_dict, acid.type, "black") for acid in acids]
+
+    x = []
+    y = []
+    for acid in acids
+        push!(x, acid.pos[1])
+        push!(y, acid.pos[2])
+    end
+    p = Plots.plot(x,y, aspect_ratio=1, legend = false, c=:black)
+    Plots.scatter!(p, x,y, color=colors)
+    return p
+end
+
 
 function plot3D(acids::Vector{Acid})
     colors = [color_dict[acid.type] for acid in acids]
@@ -53,7 +78,7 @@ function plot3D(acids::Vector{Acid})
     return p
 end
 
-function plot_interact_e(interact_e)
+function plot_interact_e(interact_e, filename)
     Plots.heatmap(interact_e, aspect_ratio=:equal, showaxis= false, legend= :none, color= :viridis, grid = false)
-    Plots.savefig("exam/plots/rithard/interaction_matrix.png")
+    Plots.savefig(filename)
 end
