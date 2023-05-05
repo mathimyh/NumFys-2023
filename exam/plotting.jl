@@ -1,16 +1,15 @@
 function plot2D(acids::Vector{Acid}, energy::Float64)
+    colors = [color_dict[acid.type] for acid in acids]
     x = []
     y = []
     for acid in acids
         push!(x, acid.pos[1])
         push!(y, acid.pos[2])
     end
-    Plots.scatter(x,y)
-    Plots.plot!(x,y, aspect_ratio=1)
-    # Plots.xlims!(0, gridsize[1])
-    # Plots.ylims!(0, gridsize[2])
-    annotation = "Energy = " * string(round.(energy/(T), digits=3)) * " kb"
-    # Plots.annotate!(minimum(acid.pos[1] for acid in acids)+2, maximum(acid.pos[2] for acid in acids)-1, annotation)
+    tittel = "E = " * string(round.(energy, digits=3)) * " kb"
+    p = Plots.plot(x,y, aspect_ratio=1, title = tittel, c=:black)
+    Plots.scatter!(p,x,y, color=colors, markersize=10)
+    return p
 end
 
 function plot2D(acids::Vector{Acid})
@@ -20,9 +19,10 @@ function plot2D(acids::Vector{Acid})
         push!(x, acid.pos[1])
         push!(y, acid.pos[2])
     end
-    Plots.scatter(x,y)
-    Plots.plot!(x,y, aspect_ratio=1)
+    p = Plots.scatter(x,y)
+    Plots.plot!(p, x,y, aspect_ratio=1)
 end
+
 
 function plot3D(acids::Vector{Acid})
     xs = []
@@ -49,4 +49,7 @@ function plot3D(acids::Vector{Acid})
     Plots.plot!(xs,ys,zs, legend=false)
 end
 
-
+function plot_interact_e(interact_e)
+    Plots.heatmap(interact_e, aspect_ratio=:equal, showaxis= false, legend= :none, color= :viridis, grid = false)
+    Plots.savefig("exam/plots/rithard/interaction_matrix.png")
+end

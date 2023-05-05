@@ -43,7 +43,9 @@ b::Float64 = mu_b / mu
 
 # saving_S = [S]
 
-plot_Ms()
+# plot_Ms()
+
+# plot_tavg_M()
 
 # for i in 1:5000
 #     Heun!(S, J)

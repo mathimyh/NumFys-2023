@@ -1,20 +1,22 @@
 function t2_1_5(steps::Int, structs::Bool = false)
     
-    acids = unfolded_chain2D(15)
+    acids, pos_idx = unfolded_chain2D(15)
     T::Float64 = 10
     xs = [i for i in 0:steps]
+    energy = 0.0
+
     energies = []
     end_to_end = []
     radii_gyr = []
 
-    push!(energies, calculate_energy(acids, interact_e))
+    push!(energies, energy)
     temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
     push!(end_to_end, sqrt(sum(temp.^2)))
     push!(radii_gyr, RoG(acids))
 
     for i in 1:steps
-        MC_sweep!(acids, T)
-        push!(energies, calculate_energy(acids, interact_e))
+        energy, pos_idx = MC_sweep!(acids, pos_idx, T, energy)
+        push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
@@ -50,7 +52,7 @@ function t2_1_5(steps::Int, structs::Bool = false)
     Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
     Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
     savename = "exam/plots/2_1_5/15N_" * string(steps) * "sweeps_10T.png"
-    Plots.savefig(savename)
+    Plots.savefig("dasdsadas.png")
 end
 
 function t2_1_6(steps::Int, structs::Bool = false)
@@ -63,15 +65,16 @@ function t2_1_6(steps::Int, structs::Bool = false)
     energies = []
     end_to_end = []
     radii_gyr = []
+    energy = 0.0
 
-    push!(energies, calculate_energy(acids, interact_e))
+    push!(energies, energy)
     temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
     push!(end_to_end, sqrt(sum(temp.^2)))
     push!(radii_gyr, RoG(acids))
 
     for i in 1:steps
-        MC_sweep!(acids, T)
-        push!(energies, calculate_energy(acids, interact_e))
+        energy = MC_sweep!(acids, T, energy)
+        push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
@@ -80,6 +83,7 @@ function t2_1_6(steps::Int, structs::Bool = false)
             if i % 100 == 0
                 plot2D(acids)
                 filename = "exam/plots/2_1_6/structures/15N_" * string(i) * "sweeps.png"
+                filename = "etststtsts" * string(i) * ".png"
                 savefig(filename)
             end
         end
@@ -106,13 +110,13 @@ function t2_1_6(steps::Int, structs::Bool = false)
     Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
     Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
     savename = "exam/plots/2_1_6/15N_" * string(steps) * "sweeps_1T.png"
-    Plots.savefig(savename)
+    Plots.savefig("testytestyetsy.png")
 end
 
 function t2_1_7a(len::Int, steps::Int, save_n_plot::Bool = true)
 
 
-    Ts::Vector{Float64} = [i for i in 0.1:0.1:10]
+    Ts::Vector{Float64} = [i for i in 0.01:0.01:10]
     base_acids = unfolded_chain2D(len) # Use the same primary structure for each T
 
 
@@ -123,40 +127,39 @@ function t2_1_7a(len::Int, steps::Int, save_n_plot::Bool = true)
         acids = deepcopy(base_acids)
         energies = []
         radii_gyr = []
-
-        push!(energies, calculate_energy(acids, interact_e))
+        energy::Float64 = 0.0
+        push!(energies, energy)
         push!(radii_gyr, RoG(acids))
 
         # Simulate 
         for j in 1:steps
-            MC_sweep!(acids, T)
-            push!(energies, calculate_energy(acids, interact_e))
+            energy = MC_sweep!(acids, T, energy)
+            push!(energies, energy)
             push!(radii_gyr, RoG(acids))
         end
 
         if save_n_plot
             # Plot for every integer T
-            if isinteger(T) && T != 10.0
+            if isinteger(T)
                 Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", ylabel="Distance", title = "N = $len, T = $T")
                 Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
                 Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
-                savename = "exam/plots/2_1_7/a/" * string(len) * "N_" * string(steps) * "sweeps_" * string(T)[1] * "T.png"
+                savename = "exam/plots/2_1_7/a/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps_" * string(T) * "T.png"
                 Plots.savefig(savename)
             end
 
-            if T == 10.0
-                Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", ylabel="Distance", title = "N = $len, T = $T")
-                Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
-                Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
-                savename = "exam/plots/2_1_7/a/" * string(len) * "N_" * string(steps) * "sweeps_10T.png"
-                Plots.savefig(savename)
-            end
+            # if T == 10.0
+            #     Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", ylabel="Distance", title = "N = $len, T = $T")
+            #     Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
+            #     Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
+            #     savename = "exam/plots/2_1_7/a/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps_10T.png"
+            #     Plots.savefig(savename)
+            # end
 
             # Save data for every run
-            if T != 10.0; jldname = "exam/cache/2_1_7/" * string(len) *"N_" * string(steps) * "sweeps_" * string(T)[1] * string(T)[3] * "T.jld"
-            else; jldname = "exam/cache/2_1_7/" * string(len) * "N_" * string(steps) * "sweeps_100T.jld"; end
+            # if T != 10.0; jldname = "exam/cache/2_1_7/1000Ts/" * string(len) *"N_" * string(steps) * "sweeps_" * string(T) * "T.jld"
+            jldname = "exam/cache/2_1_7/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps_" * string(T) * "T.jld"
             save(jldname, "T", T, "energies", energies, "radii_gyr", radii_gyr, "xs", xs)
-
         end
     end
 end
@@ -185,22 +188,23 @@ end
 
 function t2_1_8a(number::Int, steps::Int, structs::Bool = false)
     
-    acids = unfolded_chain2D(30)
+    acids, pos_idx = unfolded_chain2D(30)
     T::Float64 = 1.0
 
     xs = [i for i in 0:steps]
     energies = []
     end_to_end = []
     radii_gyr = []
+    energy = 0.0
 
-    push!(energies, calculate_energy(acids, interact_e))
+    push!(energies, energy)
     temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
     push!(end_to_end, sqrt(sum(temp.^2)))
     push!(radii_gyr, RoG(acids))
 
     for i in 1:steps
-        MC_sweep!(acids, T)
-        push!(energies, calculate_energy(acids, interact_e))
+        energy, pos_idx = MC_sweep!(acids, pos_idx, T, energy)
+        push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
@@ -233,15 +237,15 @@ function t2_1_8a(number::Int, steps::Int, structs::Bool = false)
     Plots.savefig(savename)
 end
 
-function t2_1_8(acids::Vector{Acid}, number::Int, steps::Int, annealing::Bool = false, structs::Bool = false)
+function t2_1_8(acids::Vector{Acid}, pos_idx::Dict{Tuple,Int}, number::Int, steps::Int, annealing::Bool = false, structs::Bool = false)
     
-    stepsize = 3.0 / steps
+    stepsize = 4.0 / steps
         
     T::Float64 = 1.0
     annealing_naming::String = ""
 
     if annealing
-        T = 3.0
+        T = 4.0
         annealing_naming = "SA"
     end
 
@@ -249,15 +253,16 @@ function t2_1_8(acids::Vector{Acid}, number::Int, steps::Int, annealing::Bool = 
     energies = []
     end_to_end = []
     radii_gyr = []
+    energy = 0.0
 
-    push!(energies, calculate_energy(acids, interact_e))
+    push!(energies, energy)
     temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
     push!(end_to_end, sqrt(sum(temp.^2)))
     push!(radii_gyr, RoG(acids))
 
     for i in 1:steps
-        MC_sweep!(acids, T)
-        push!(energies, calculate_energy(acids, interact_e))
+        energy, pos_idx = MC_sweep!(acids, pos_idx, T, energy)
+        push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
@@ -288,27 +293,27 @@ function t2_1_8(acids::Vector{Acid}, number::Int, steps::Int, annealing::Bool = 
 end
 
 function actually_t2_1_8()
-    acids = unfolded_chain2D(30)
+    acids, pos_idx = unfolded_chain2D(30)
     for i in 1:5
         temp_acids = deepcopy(acids)
         SA::Bool = false
         if i > 3
             SA = true
         end
-        t2_1_8(temp_acids, i, 10000, SA, true)
+        t2_1_8(temp_acids, pos_idx, i, 10000, SA, true)
     end
 end
 
 
 function t2_1_9(acids::Vector{Acid}, number::Int, steps::Int, annealing::Bool = false, structs::Bool = false)
     
-    stepsize = 3.0 / steps
+    stepsize = 4.0 / steps
         
     T::Float64 = 1.0
     annealing_naming::String = ""
 
     if annealing
-        T = 3.0
+        T = 4.0
         annealing_naming = "SA"
     end
 
@@ -447,3 +452,23 @@ function t2_2_3a(len::Int, steps::Int, save_n_plot::Bool = true)
     end
 end
 
+function t2_2_3b(len::Int, steps::Int)
+    Ts = []
+    avg_energies = []
+    avg_RoGs = []
+    for i in 0.1:0.1:9.9
+        jldname = "exam/cache/2_2_3/" * string(len) * "N_" * string(steps) * "sweeps_" * string(i)[1] * string(i)[end] * "T.jld"
+        push!(Ts, load(jldname, "T"))
+        push!(avg_energies, mean(load(jldname, "energies")[1200:end]))
+        push!(avg_RoGs, mean(load(jldname, "radii_gyr")[1200:end]))
+    end
+    reverse!(Ts)
+    reverse!(avg_energies)
+    reverse!(avg_RoGs)
+    Plots.plot(Ts, avg_energies, dpi=300, xlabel="Temperature", ylabel="Energy", title = "Average energy, N = $len", legend=false)
+    savename = "exam/plots/2_2_3/b/avgE_" * string(len) * "N_" * string(steps) * "sweeps.png"
+    Plots.savefig(savename)
+    Plots.plot(Ts, avg_RoGs, dpi=300, xlabel="Temperature", ylabel="Distance", title = "Average RoG, N = $len", legend=false)
+    savename = "exam/plots/2_2_3/b/avgRoG_" * string(len) * "N_" * string(steps) * "sweeps.png"
+    Plots.savefig(savename)
+end

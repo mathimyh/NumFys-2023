@@ -55,21 +55,21 @@ function plot_Ms()
 end
 
 
-function plot_tavg_M()::Nothing
+function plot_tavg_M()
     avg_Ms = Vector{Float64}()
 
-    startpoints = [0.1 for i in 1:10]
-    temps = [0.2, 0.3, 0.4]
+    startpoints = [0.1 for i in 1:15]
+    temps = [0.5 for i in 1:5]
     startpoints = vcat(startpoints, temps)
-    Ts = [0.2*i for i in 1:10]
+    Ts = [0.1*i for i in 1:20]
 
-    for i in 0.2:0.2:2
+    for i in 0.1:0.1:2
         filename = "exercise2/cache/magnetization_20x20x20_" * string(i)[1] * string(i)[3] * "T_10000steps.jld"
         pngname = "exercise2/plots/magnetization_20x20x20_" * string(i)[1] * string(i)[3] * "T_10000steps.png"
         Ms = load(filename, "Ms")
         ts = load(filename, "ts")
-        ts ./= 10e-12
-        idx = trunc(Int, i*5)
+        ts ./= 1e-12
+        idx = trunc(Int, i*10)
         push!(avg_Ms, time_avg_magnetization(ts, Ms, startpoints[idx]))
     end
 

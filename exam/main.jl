@@ -16,7 +16,18 @@ using Plots; gr()
 const kb = 1.380649e-23 # m^2 kg s^-2 K^-1
 global interact_e = interaction_energies()
 
+# Define colors for the plotting. As we get new interaction energies it doesnt matter that 
+# the colors are randomly chosen each time. 
+color_dict = Dict(i => rand(RGB) for i in 1:20)
 
+# plots = []
+# for i in 1:3
+#     acids, pos_idx = folded_chain2D(15)
+#     energy = calculate_energy(acids, pos_idx, interact_e, 2)
+#     push!(plots, plot2D(acids, energy))
+# end
+# Plots.plot(plots..., layout=(1,3), size = (1500,500), legend=false)
+# Plots.savefig("exam/plots/2_1_3/subplots.png")
 # actually_t2_1_9(interact_e)
 
 
@@ -24,14 +35,14 @@ global interact_e = interaction_energies()
 # ProfileView.@profview(t2_1_7a(15, 1000, false))
 
 # @time t2_1_7a(5,10, false)
-# @time t2_1_7a(15,2000, false)
+# @time t2_1_7a(15,1000, false)
 
-ProfileView.@profview t2_2_3a(1,10, false)
-ProfileView.@profview t2_2_3a(15, 100, false)
+# ProfileView.@profview t2_2_3a(1,10, false)
+# ProfileView.@profview t2_2_3a(15, 100, false)
 
 # ProfileView.@profview(t2_2_3a(5, 10, false))
 # ProfileView.@profview(t2_2_3a(15, 500, false))
 
-
-
-
+for N in (15,50,100)
+    t2_1_7a(N, 2000, true)
+end
