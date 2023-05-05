@@ -1,6 +1,6 @@
 function t2_1_5(steps::Int, structs::Bool = false)
     
-    acids, pos_idx = unfolded_chain2D(15)
+    acids = unfolded_chain2D(15)
     T::Float64 = 10
     xs = [i for i in 0:steps]
     energy = 0.0
@@ -14,45 +14,52 @@ function t2_1_5(steps::Int, structs::Bool = false)
     push!(end_to_end, sqrt(sum(temp.^2)))
     push!(radii_gyr, RoG(acids))
 
+    ps = []
+
     for i in 1:steps
-        energy, pos_idx = MC_sweep!(acids, pos_idx, T, energy)
+        energy = MC_sweep!(acids, T, energy)
         push!(energies, energy)
         temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
 
+        # Plotting the stuff. Might want to not do this every time
         if structs 
-            if i % 100 == 0
-                plot2D(acids)
-                filename = "exam/plots/2_1_5/structures/15N_" * string(i) * "steps.png"
-                savefig(filename)
+            if i == 300
+                p = plot2D(acids, energy)
+                r_energy = round(energy,digits=2)
+                Plots.title!("E = $r_energy kb, Sweeps = $i")
+                push!(ps,p)
+            elseif i == 400
+                p = plot2D(acids, energy)
+                r_energy = round(energy,digits=2)
+                Plots.title!("E = $r_energy kb, Sweeps = $i")
+                push!(ps,p)
+            elseif i == 500
+                p = plot2D(acids, energy)
+                r_energy = round(energy,digits=2)
+                Plots.title!("E = $r_energy kb, Sweeps = $i")
+                push!(ps,p)
             end
         end
 
-        # # Plotting the stuff. Might want to not do this every time
-        # if i == 1
-        #     local energy = calculate_energy(acids, interact_e)
-        #     plot2D(acids, energy)
-        #     savefig("exam/plots/unfolded_20monomers_10T_1sweep.png")
-        # elseif i == 10
-        #     local energy = calculate_energy(acids, interact_e)
-        #     plot2D(acids, energy)
-        #     savefig("exam/plots/unfolded_20monomers_10T_10sweeps.png")
-        # elseif i == 100
-        #     local energy = calculate_energy(acids, interact_e)
-        #     plot2D(acids, energy)
-        #     savefig("exam/plots/unfolded_20monomers_10T_100sweeps.png")
-        # end
+
     end
 
-    Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", title="N = 15, T = $T")
+    p = Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", title="N = 15, T = $T")
     # Plots.savefig("exam/plots/energies_unfolded_15monomers_100sweeps_1T.png")
     Plots.plot!(xs, end_to_end, color=:red, label="End-end distances", ylabel="Distance")
     # Plots.savefig("exam/plots/endtoend_unfolded_15monomers_100sweeps_1T.png")
     Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
     Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
+    
+    if structs
+        s = Plots.plot(ps..., layout=(1,3), size=(1500, 500))
+        Plots.plot(s, p, layout=(2,1), size = (1200, 1000))
+        Plots.savefig("exam/plots/2_1_5/subplots10T.png")
+    end
     savename = "exam/plots/2_1_5/15N_" * string(steps) * "sweeps_10T.png"
-    Plots.savefig("dasdsadas.png")
+    Plots.savefig(savename)
 end
 
 function t2_1_6(steps::Int, structs::Bool = false)
@@ -66,6 +73,7 @@ function t2_1_6(steps::Int, structs::Bool = false)
     end_to_end = []
     radii_gyr = []
     energy = 0.0
+    ps = []
 
     push!(energies, energy)
     temp = [acids[1].pos[i]-acids[end].pos[i] for i in eachindex(acids[1].pos)]
@@ -79,38 +87,43 @@ function t2_1_6(steps::Int, structs::Bool = false)
         push!(end_to_end, sqrt(sum(temp.^2)))
         push!(radii_gyr, RoG(acids))
 
-        if structs
-            if i % 100 == 0
-                plot2D(acids)
-                filename = "exam/plots/2_1_6/structures/15N_" * string(i) * "sweeps.png"
-                filename = "etststtsts" * string(i) * ".png"
-                savefig(filename)
+        
+        # Plotting of the structures. 
+        if structs 
+            if i == 300
+                p = plot2D(acids, energy)
+                r_energy = round(energy,digits=2)
+                Plots.title!("E = $r_energy kb, Sweeps = $i")
+                push!(ps,p)
+            elseif i == 400
+                p = plot2D(acids, energy)
+                r_energy = round(energy,digits=2)
+                Plots.title!("E = $r_energy kb, Sweeps = $i")
+                push!(ps,p)
+            elseif i == 500
+                p = plot2D(acids, energy)
+                r_energy = round(energy,digits=2)
+                Plots.title!("E = $r_energy kb, Sweeps = $i")
+                push!(ps,p)
             end
         end
-        # # Plotting the stuff. Might want to not do this every time
-        # if i == 1
-        #     local energy = calculate_energy(acids, interact_e)
-        #     plot2D(acids, energy)
-        #     savefig("exam/plots/unfolded_20monomers_10T_1sweep.png")
-        # elseif i == 10
-        #     local energy = calculate_energy(acids, interact_e)
-        #     plot2D(acids, energy)
-        #     savefig("exam/plots/unfolded_20monomers_10T_10sweeps.png")
-        # elseif i == 100
-        #     local energy = calculate_energy(acids, interact_e)
-        #     plot2D(acids, energy)
-        #     savefig("exam/plots/unfolded_20monomers_10T_100sweeps.png")
-        # end
+
     end
     
-    Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", title="N = 15, T = $T")
+    
+
+    p = Plots.plot(xs, radii_gyr, color=:green, label="RoGs", dpi=300, xlabel="Sweeps", title="N = 15, T = $T")
     # Plots.savefig("exam/plots/energies_unfolded_15monomers_100sweeps_1T.png")
     Plots.plot!(xs, end_to_end, color=:red, label="End-end distances", ylabel="Distance")
     # Plots.savefig("exam/plots/endtoend_unfolded_15monomers_100sweeps_1T.png")
     Plots.plot!(xs, NaN.*energies, color=:blue, label="Energies")
-    Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy")
+    Plots.plot!(twinx(), energies, color=:blue, legend=false, ylabel="Energy [kb]")
     savename = "exam/plots/2_1_6/15N_" * string(steps) * "sweeps_1T.png"
-    Plots.savefig("testytestyetsy.png")
+    if structs
+        s = Plots.plot(ps..., layout=(1,3), size=(1500, 500))
+        return s, p
+    end
+    return p
 end
 
 function t2_1_7a(len::Int, steps::Int, save_n_plot::Bool = true)
@@ -168,20 +181,25 @@ function t2_1_7b(len::Int, steps::Int)
     Ts = []
     avg_energies = []
     avg_RoGs = []
-    for i in 0.1:0.1:9.9
-        jldname = "exam/cache/2_1_7/" * string(len) * "N_" * string(steps) * "sweeps_" * string(i)[1] * string(i)[end] * "T.jld"
+    for i in 0.01:0.01:9.99
+        jldname = "exam/cache/2_1_7/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps_" * string(i) * "T.jld"
         push!(Ts, load(jldname, "T"))
-        push!(avg_energies, mean(load(jldname, "energies")[1200:end]))
-        push!(avg_RoGs, mean(load(jldname, "radii_gyr")[1200:end]))
+        push!(avg_energies, mean(load(jldname, "energies")[1000:end]))
+        push!(avg_RoGs, mean(load(jldname, "radii_gyr")[1000:end]))
     end
+
+    # There seems to be a bug in Plots.jl, for when I try to use twinx() to have two different y-axis
+    # and plot energies and RoGs in the same plot, the x-axis reverts to increasing values instead of 
+    # decreasing as wanted. In addition, one of the plots is multiplied by a factor of 10 for its x-values
+    # This code works, but produces a far less appealing plot. 
+
     reverse!(Ts)
     reverse!(avg_energies)
     reverse!(avg_RoGs)
-    Plots.plot(Ts, avg_energies, dpi=300, xlabel="Temperature", ylabel="Energy", title = "Average energy, N = $len", legend=false)
-    savename = "exam/plots/2_1_7/b/avgE_" * string(len) * "N_" * string(steps) * "sweeps.png"
-    Plots.savefig(savename)
-    Plots.plot(Ts, avg_RoGs, dpi=300, xlabel="Temperature", ylabel="Distance", title = "Average RoG, N = $len", legend=false)
-    savename = "exam/plots/2_1_7/b/avgRoG_" * string(len) * "N_" * string(steps) * "sweeps.png"
+    p = Plots.plot(Ts, avg_energies, color=:blue, label="Average energies", dpi=300, xlabel="Temperature", ylabel="Energy [kb]", title = "N = $len")
+    Plots.plot!(p, Ts, NaN.*avg_RoGs, color=:red, label="Average RoG")
+    Plots.plot!(Ts, avg_RoGs, color=:red, legend=false, label="Average RoG")
+    savename = "exam/plots/2_1_7/b/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps.png"
     Plots.savefig(savename)
 
 end

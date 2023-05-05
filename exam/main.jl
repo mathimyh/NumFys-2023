@@ -43,6 +43,13 @@ color_dict = Dict(i => rand(RGB) for i in 1:20)
 # ProfileView.@profview(t2_2_3a(5, 10, false))
 # ProfileView.@profview(t2_2_3a(15, 500, false))
 
-for N in (15,50,100)
-    t2_1_7a(N, 2000, true)
-end
+t2_1_7b(15, 2000)
+
+# p1, p2 = t2_1_6(500, true)
+# p3 = t2_1_6(10000)
+
+# Plots.plot(p1,p2,p3, layout=(3,1), size=(1200,1400))
+# Plots.savefig("exam/plots/2_1_6/subplots1T.png")
+
+# t2_1_5(500, true)
+
