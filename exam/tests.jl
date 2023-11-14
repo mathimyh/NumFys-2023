@@ -38,3 +38,14 @@ function animations!!()
 
     gif(anim, "exam/gifs/sussyboy.gif", fps=2)
 end
+
+# # Preliminary check!
+# y::Float32 = 1.0
+# x = 2^(-23)
+# z = y + x
+# println(z)
+
+# a::Float64 = 1.0
+# b = 2^(-52)
+# c = a + b
+# println(c)

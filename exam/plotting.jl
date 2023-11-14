@@ -1,4 +1,12 @@
 function plot2D(acids::Vector{Acid}, energy::Float64)
+    
+    #= 
+
+    Plots the structure of a given vector of acids and titles it with the energy of the system
+    Returns the plot
+
+    =#
+    
     colors = [color_dict[acid.type] for acid in acids]
     x = []
     y = []
@@ -13,6 +21,12 @@ function plot2D(acids::Vector{Acid}, energy::Float64)
 end
 
 function plot2D(acids::Vector{Acid})
+    #=
+
+    Plots the structure of a given vector of acids, returns the plot
+
+    =#
+    
     colors = [color_dict[acid.type] for acid in acids]
     x = []
     y = []
@@ -26,8 +40,15 @@ function plot2D(acids::Vector{Acid})
 end
 
 function plot2D_2_1_9(acids::Vector{Acid})
-    # Now I want to plot every acid as black, but the acids that have positive interactions with 
-    # pairwise colors so it's easy to see on the plot which acids dont like each other!
+
+    #= 
+    
+    Now I want to plot every acid as black, but the acids that have positive interactions with 
+    pairwise colors so it's easy to see on the plot which acids dont like each other!
+
+    =#
+
+
     color_dict = Dict(i => "black" for i in 1:20)
 
     positive_pairs = [(i, j) for i in 1:20 for j in i+1:20 if interact_e[i, j] > 0]

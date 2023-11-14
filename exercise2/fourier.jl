@@ -1,5 +1,14 @@
 function fourier_2D(length::Int, filename::String, FM::Bool = true)
     
+    #=
+
+    Simulates either a ferromagnetic or antiferromagnetic groundstate for length timesteps, saves 
+    the x-values of the spin.
+    Then takes the Fourier transform of the x-values, and saves the Fourier matrix in a file filename
+
+    =#
+
+
     if FM
         S = chain_groundstate_FM(length)
     else

@@ -81,6 +81,13 @@ function calculate_energy(acids::Vector{Acid}, interaction_e, dims::Int)::Float6
 end
      
 function findindex(this::Tuple, acids::Vector{Acid})::Int
+    #= 
+
+    This is quite slow, and was part of the code I wanted to replace
+    Returns the index of the acid that is in a given position.
+
+    =# 
+
     idx = 0
     for i in eachindex(acids)
         if acids[i].pos == this
@@ -93,6 +100,13 @@ end
 
 function RoG(acids::Vector{Acid})
     
+    #=
+
+    Returns the radius of gyration for a 2 dimensional polymer
+
+    =#
+
+
     poses = [acid.pos for acid in acids]
 
     centre_of_mass = (mean(pos[1] for pos in poses), mean(pos[2] for pos in poses))
@@ -105,38 +119,15 @@ function RoG(acids::Vector{Acid})
 end
 
 
-# From here and down the functions are made for 3 dimensions
-# If I have more time I would want to generalize the functions to work for both but for now it is what it is
-
-# function nearest_neighbours3D(this::Acid, acids::Vector{Acid})
-#     occupied = [acid.pos for acid in acids]
-#     this.nearest = Vector{Acid}()
-#     bords = [(0,1,0),(0,1,0),(0,0,1),(-1,0,0),(0,-1,0),(0,0,-1)] # Generalize!
-#     for bord in bords
-#         temp = this.pos .+ bord
-#         idx = findindex(temp, acids)
-#         if temp ∈ occupied && acids[idx] ∉ this.cov_bond
-#             push!(this.nearest, acids[idx])
-#         end
-#     end
-# end
-
-# function nearest_neighbours3D(tup::Tuple{Int, Int}, acids::Vector{Acid})
-#     this = acids[findindex(tup, acids)]
-#     occupied = [acid.pos for acid in acids]
-#     this.nearest = Vector{Acid}()
-#     bords = [(0,1,0),(0,1,0),(0,0,1),(-1,0,0),(0,-1,0),(0,0,-1)] # Generalize!
-#     for bord in bords
-#         temp = this.pos .+ bord
-#         idx = findindex(temp, acids)
-#         if temp ∈ occupied && acids[idx] ∉ this.cov_bond
-#             push!(this.nearest, acids[idx])
-#         end
-#     end
-# end
 
 function RoG3D(acids::Vector{Acid}) # This should easily be generalized if I have time
     
+    #= 
+
+    Returns the radius of gyration of a 3 dimensional polymer
+
+    =#
+
     poses = [acid.pos for acid in acids]
 
     centre_of_mass = (mean(pos[1] for pos in poses), mean(pos[2] for pos in poses), mean(pos[3] for pos in poses))

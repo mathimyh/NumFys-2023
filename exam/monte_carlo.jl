@@ -2,8 +2,7 @@ function MMC_check(test::Acid, transition::Tuple, acids::Vector{Acid}, T::Float6
     
     #=
 
-    The Metropolis Monte Carlo method for checking if a transition will happen.
-    Returns true if it will, false if not
+    The Metropolis Monte Carlo method for checking if a transition is energetically possible
     
     =#
 
@@ -38,10 +37,10 @@ function transition!(acids::Vector{Acid}, T::Float64, curr_e::Float64)
     
     #=
     
-    Picks one random monomer and checks if it has possible transitions. 
-    If yes, it moves the monomer to the new position.
+    Picks one random monomer and checks if it has physically possible transitions 
     
     =#
+
     energy::Float64 = curr_e
     test = rand(acids)
     idx = findfirst(x -> x == test, acids)

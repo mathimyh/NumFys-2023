@@ -181,8 +181,8 @@ function t2_1_7b(len::Int, steps::Int)
     Ts = []
     avg_energies = []
     avg_RoGs = []
-    for i in 0.01:0.01:9.99
-        jldname = "exam/cache/2_1_7/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps_" * string(i) * "T.jld"
+    for i in 0.1:0.1:9.9
+        jldname = "exam/cache/2_1_7/100Ts/" * string(len) * "N_" * string(steps) * "sweeps_" * string(i)[1] * string(i)[3] * "T.jld"
         push!(Ts, load(jldname, "T"))
         push!(avg_energies, mean(load(jldname, "energies")[1000:end]))
         push!(avg_RoGs, mean(load(jldname, "radii_gyr")[1000:end]))
@@ -199,7 +199,7 @@ function t2_1_7b(len::Int, steps::Int)
     p = Plots.plot(Ts, avg_energies, color=:blue, label="Average energies", dpi=300, xlabel="Temperature", ylabel="Energy [kb]", title = "N = $len")
     Plots.plot!(p, Ts, NaN.*avg_RoGs, color=:red, label="Average RoG")
     Plots.plot!(Ts, avg_RoGs, color=:red, legend=false, label="Average RoG")
-    savename = "exam/plots/2_1_7/b/1000Ts/" * string(len) * "N_" * string(steps) * "sweeps.png"
+    savename = "exam/plots/2_1_7/b/100Ts/" * string(len) * "N_" * string(steps) * "sweeps.png"
     Plots.savefig(savename)
 
 end
@@ -488,13 +488,21 @@ function t2_2_3b(len::Int, steps::Int)
         push!(avg_energies, mean(load(jldname, "energies")[1200:end]))
         push!(avg_RoGs, mean(load(jldname, "radii_gyr")[1200:end]))
     end
+    # reverse!(Ts)
+    # reverse!(avg_energies)
+    # reverse!(avg_RoGs)
+    # Plots.plot(Ts, avg_energies, dpi=300, xlabel="Temperature", ylabel="Energy", title = "Average energy, N = $len", legend=false)
+    # savename = "exam/plots/2_2_3/b/avgE_" * string(len) * "N_" * string(steps) * "sweeps.png"
+    # Plots.savefig(savename)
+    # Plots.plot(Ts, avg_RoGs, dpi=300, xlabel="Temperature", ylabel="Distance", title = "Average RoG, N = $len", legend=false)
+    # savename = "exam/plots/2_2_3/b/avgRoG_" * string(len) * "N_" * string(steps) * "sweeps.png"
+    # Plots.savefig(savename)
     reverse!(Ts)
     reverse!(avg_energies)
     reverse!(avg_RoGs)
-    Plots.plot(Ts, avg_energies, dpi=300, xlabel="Temperature", ylabel="Energy", title = "Average energy, N = $len", legend=false)
-    savename = "exam/plots/2_2_3/b/avgE_" * string(len) * "N_" * string(steps) * "sweeps.png"
-    Plots.savefig(savename)
-    Plots.plot(Ts, avg_RoGs, dpi=300, xlabel="Temperature", ylabel="Distance", title = "Average RoG, N = $len", legend=false)
-    savename = "exam/plots/2_2_3/b/avgRoG_" * string(len) * "N_" * string(steps) * "sweeps.png"
+    p = Plots.plot(Ts, avg_energies, color=:blue, label="Average energies", dpi=300, xlabel="Temperature", ylabel="Energy [kb]", title = "N = $len")
+    Plots.plot!(p, Ts, NaN.*avg_RoGs, color=:red, label="Average RoG")
+    Plots.plot!(Ts, avg_RoGs, color=:red, legend=false, label="Average RoG")
+    savename = "exam/plots/2_2_3/b/" * string(len) * "N_" * string(steps) * "sweeps.png"
     Plots.savefig(savename)
 end
